@@ -1,0 +1,1 @@
+export const authorsApi = 'https://gulbarakadyrovna.pythonanywhere.com/api/author_list/'
