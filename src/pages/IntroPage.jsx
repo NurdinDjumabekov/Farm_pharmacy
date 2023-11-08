@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import AuthForm from "../components/AuthForm"
-
+import logo from '../../public/logo.png'
 const IntroPage = () =>
 {
     const [openModal, setOpenModal] = useState(false)
@@ -10,6 +10,7 @@ const IntroPage = () =>
     }, [openModal])
     return (
         <div>
+            <div><img src={logo} alt="logo" /></div>
             <h1>NUSKA ADMIN PANEL</h1>
             <h2>Войти как:</h2>
             <div>

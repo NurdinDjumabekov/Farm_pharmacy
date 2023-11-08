@@ -1,4 +1,4 @@
-import Students from '../Students/Students';
+import UserCard from '../UserCard/UserCard';
 import cls from './studentsPage.module.css'
 
 const UsersPage = ({ users }) =>
@@ -7,7 +7,7 @@ const UsersPage = ({ users }) =>
     return (
         <main className={cls.studentsWrapper}>
             {
-                users.map(user => <Students key={user.id} userData={user} />) || <h3 style={{ textAlign: 'center', marginTop: '8px' }}>Список учеников пуст</h3>
+                users.map(user => <UserCard key={user.id} userData={user} />) || <h3 style={{ textAlign: 'center', marginTop: '8px' }}>Список Пользователей пуст</h3>
             }
         </main>
     )

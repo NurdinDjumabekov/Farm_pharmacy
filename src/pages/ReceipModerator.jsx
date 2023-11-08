@@ -9,36 +9,28 @@ import AutorsList from "../components/AutorsList"
 import { getUsers } from "../redux/slices/usersSlice"
 import { usersApi } from "../api/usersApis"
 import UsersPage from "../components/UsersPage/UsersPage"
+import logo from '../../public/logo.png'
 
 const ReceipModerator = () =>
 {
     const dispatch = useDispatch()
-    const users = [{
-        email: "kairat@gmail.com",
-        id: 2,
-        username: "Kairat"
-    },
-    {
-        email: "baelbekbolotovb12356@gmail.com",
-        id: 4,
-        username: "baielbekenov"
-    }]
     const [showBooks, setShowBooks] = useState(false)
     const [showAutors, setShowAutors] = useState(false)
     const [showUsers, setShowUsers] = useState(false)
     const { books } = useSelector(state => state.bookReducer)
     const { authors } = useSelector(state => state.authorsReducer)
-    // const { users } = useSelector(state => state.usersReducer)
+    const { users } = useSelector(state => state.usersReducer)
 
     useEffect(() =>
     {
         dispatch(getBooks(booksApi))
         dispatch(getAuthors(authorsApi))
-        // dispatch(getUsers(usersApi))
+        dispatch(getUsers(usersApi))
     }, [])
     return (
         <div>
-            <h2>Admin page</h2>
+            <div><img src={logo} alt="logo" /></div>
+            <h2>Receip Page</h2>
             <button onClick={() => setShowBooks(!showBooks)}>{showBooks ? 'Свернуть Книги' : 'Показать Книги'}</button>
             {showBooks && (books.length > 0 ? <BooksList list={books} aut={authors} /> : <p>Книг нету</p>)}
             <button onClick={() => setShowAutors(!showAutors)}>{showAutors ? 'Свернуть Авторов' : 'Показать Авторов'}</button>

@@ -18,7 +18,7 @@ const Students = ({ userData }) =>
                 </div>
                 <div className={cls.middle}>
                     <div className={cls.courseInfo}>
-                        <p>email: {userData.email}</p>
+                        <p>email: {userData.is_superuser}</p>
                     </div>
                     <div className={cls.monthInfo}>
                         <p></p>

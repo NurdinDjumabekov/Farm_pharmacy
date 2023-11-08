@@ -1,1 +1,1 @@
-export const usersApi = 'https://gulbarakadyrovna.pythonanywhere.com/api/v1/auth/users/'
+export const usersApi = 'https://gulbarakadyrovna.pythonanywhere.com/api/user_list/'
