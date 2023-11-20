@@ -1,26 +1,16 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { getBooks } from "../redux/slices/bookSlice"
 import { booksApi } from "../api/bookApis"
-import { useDispatch, useSelector } from "react-redux"
-import BooksList from "../components/BooksList"
+import { useDispatch } from "react-redux"
 import { getAuthors } from "../redux/slices/authorsSlice"
 import { authorsApi } from "../api/authorApis"
-import AutorsList from "../components/AutorsList"
 import { getUsers } from "../redux/slices/usersSlice"
 import { usersApi } from "../api/usersApis"
-import UsersPage from "../components/UsersPage/UsersPage"
-import logo from '../../public/logo.png'
+import { NavLink } from "react-router-dom"
 
 const AdminPage = () =>
 {
     const dispatch = useDispatch()
-
-    const [showBooks, setShowBooks] = useState(false)
-    const [showAutors, setShowAutors] = useState(false)
-    const [showUsers, setShowUsers] = useState(false)
-    const { books } = useSelector(state => state.bookReducer)
-    const { authors } = useSelector(state => state.authorsReducer)
-    const { users } = useSelector(state => state.usersReducer)
 
     useEffect(() =>
     {
@@ -29,18 +19,31 @@ const AdminPage = () =>
         dispatch(getUsers(usersApi))
     }, [])
     return (
-        <div>
-            <div><img src={logo} alt="img" /></div>
+        <div className="adminPage">
             <h2>Admin page</h2>
-            <button onClick={() => setShowBooks(!showBooks)}>{showBooks ? 'Свернуть Книги' : 'Показать Книги'}</button>
-            {showBooks && (books.length > 0 ? <BooksList list={books} aut={authors} /> : <p>Книг нету</p>)}
-            <button onClick={() => setShowAutors(!showAutors)}>{showAutors ? 'Свернуть Авторов' : 'Показать Авторов'}</button>
-            {showAutors && (authors.length > 0 ? <AutorsList list={authors} /> : <p>Авторов нету</p>)}
-            <button onClick={() => setShowUsers(!showUsers)}>{showUsers ? 'Свернуть Пользователей' : 'Показать Пользователей'}</button>
-            {showUsers && (authors.length > 0 ? <UsersPage users={users} /> : <p>Пользователей нету</p>)}
-            <button>Жанры</button>
-            <button>Издатели</button>
-            <button>Комменты</button>
+            <div className="categories">
+                <div className="usersBlok">
+                    <h2>Аутентификация</h2>
+                    <NavLink to={'/admin/users'}>Пользователи</NavLink>
+                    <NavLink to={'/admin/agreements'}>Соглашения</NavLink>
+                </div>
+                <div className="booksBlok">
+                    <h2>Библиотека</h2>
+                    <NavLink to={'/admin/authors'}>Авторы</NavLink>
+                    <NavLink to={'/admin/books'}>Книги</NavLink>
+                    <NavLink to={'/admin/janrs'}>Жанры</NavLink>
+                    <NavLink to={'/admin/comments'}>Комментарии</NavLink>
+
+                </div>
+                <div className="ordersBlok">
+                    <h2>Заказы</h2>
+                    <NavLink to={'/admin/orders'}>Заказы</NavLink>
+                    <NavLink to={'/admin/receipts'}>Поступления</NavLink>
+                </div>
+                <div className="accesBlok">
+                    <h2>Доступы и ограничения</h2>
+                </div>
+            </div>
         </div>
     )
 }

@@ -9,7 +9,7 @@ import AutorsList from "../components/AutorsList"
 import { getUsers } from "../redux/slices/usersSlice"
 import { usersApi } from "../api/usersApis"
 import UsersPage from "../components/UsersPage/UsersPage"
-import logo from '../../public/logo.png'
+import logo from '../../public/logo.svg'
 
 const SaleModerator = () =>
 {
