@@ -111,7 +111,6 @@ export const LeftoversScreen = () => {
           </>
         )}
       </SafeAreaView>
-      
     </ScrollView>
   );
 };

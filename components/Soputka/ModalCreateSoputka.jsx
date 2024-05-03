@@ -17,11 +17,11 @@ export const ModalCreateSoputka = (props) => {
 
   const dispatch = useDispatch();
 
-  const [obj, setObj] = useState({ comment: "", agent_guid: "" });
+  const [obj, setObj] = useState({ comment: "", qrcode: "" });
 
   const closeModal = () => {
     setModalState(false);
-    setObj({ comment: "", agent_guid: "" });
+    setObj({ comment: "", qrcode: "" });
   };
 
   const { data } = useSelector((state) => state.saveDataSlice);
@@ -29,14 +29,16 @@ export const ModalCreateSoputka = (props) => {
   const { listAgents } = useSelector((state) => state.requestSlice);
 
   const create = () => {
-    if (obj?.agent_guid === "") {
-      Alert.alert("Выберите агента");
+    if (!obj?.qrcode) {
+      Alert.alert("Выберите доктора");
     } else {
       const dataObj = { ...obj, seller_guid: data?.seller_guid };
       dispatch(createInvoiceSoputkaTT({ navigation, dataObj }));
       closeModal();
     }
   };
+
+  // console.log(obj, "obj");
 
   return (
     <Modal
@@ -58,8 +60,8 @@ export const ModalCreateSoputka = (props) => {
                 item={item}
                 setState={setObj}
                 prev={obj}
-                keyGuid={"agent_guid"}
-                keyText={"agent"}
+                keyGuid={"qrcode"}
+                keyText={"fio"}
               />
             ))}
           </ScrollView>

@@ -33,13 +33,3 @@ export const dataCategory = [
 ];
 
 export const listTableLeftoverst = [" Товар", " Цена", " Кол-во", " Бонусы"];
-
-export const listTableForAcceptInvoice = [" Продукт", "Цена", "Вес"];
-
-export const listTableForReturnProd = [
-  " Товар",
-  " Цена",
-  "В наличии",
-  "Возврат",
-  " ....",
-];

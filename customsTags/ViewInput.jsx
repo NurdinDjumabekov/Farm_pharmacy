@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import styled from "styled-components/native";
 
@@ -19,13 +19,9 @@ const TextLabel = styled.Text`
   text-align: left;
 `;
 
-export const ViewInput = ({
-  value,
-  onChangeText,
-  placeholder,
-  text,
-  typePassword,
-}) => {
+export const ViewInput = (props) => {
+  const { value, onChangeText, placeholder, text, typePassword } = props;
+
   return (
     <View>
       {text !== "" && <TextLabel>{text}</TextLabel>}

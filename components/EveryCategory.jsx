@@ -38,8 +38,6 @@ const BackgroundImage = styled.Image`
 
 export const EveryCategory = ({ obj, navigation }) => {
   const clickCateg = () => {
-    // console.log(navigation, "navigation");
-    // console.log(obj.link);
     navigation.navigate(`${obj.link}`, {
       id: obj?.codeid,
       name: obj?.name,

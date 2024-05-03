@@ -7,7 +7,7 @@ import {
   deleteSoputkaProd,
   getListSoputkaProd,
 } from "../store/reducers/requestSlice";
-import ConfirmationModal from "../components/ConfirmationModal";
+import ConfirmationModal from "../common/ConfirmationModal";
 import { ViewButton } from "../customsTags/ViewButton";
 
 export const SoputkaProductScreen = ({ route, navigation }) => {

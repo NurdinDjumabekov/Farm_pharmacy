@@ -59,7 +59,7 @@ export const SoputkaScreen = ({ navigation }) => {
           </ViewButton>
         </View>
         <View style={styles.selectBlock}>
-          <Text style={styles.title}>История сопутки</Text>
+          <Text style={styles.title}>История продаж</Text>
           <FlatList
             data={listHistorySoputka}
             renderItem={({ item, index }) => (
@@ -92,7 +92,7 @@ export const SoputkaScreen = ({ navigation }) => {
                 )}
               </TouchableOpacity>
             )}
-            keyExtractor={(item) => item?.codeid}
+            keyExtractor={(item) => item?.guid}
             refreshControl={
               <RefreshControl refreshing={preloader} onRefresh={getData} />
             }

@@ -48,7 +48,7 @@ export const AddProdSoputkaSrceen = ({ navigation, route }) => {
   const listProdSale = () => {
     // console.log(forAddTovar, "forAddTovar");
     navigation.navigate("SoputkaProductScreen", {
-      guidInvoice: forAddTovar?.invoice_guid,
+      guidInvoice: forAddTovar?.guid,
     });
   };
 

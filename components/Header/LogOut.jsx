@@ -4,7 +4,7 @@ import { changePreloader } from "../../store/reducers/requestSlice";
 import { useState } from "react";
 import { clearLogin } from "../../store/reducers/stateSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ConfirmationModal from "../ConfirmationModal";
+import ConfirmationModal from "../../common/ConfirmationModal";
 import { clearLocalData } from "../../store/reducers/saveDataSlice";
 
 export const LogOut = ({ navigation }) => {

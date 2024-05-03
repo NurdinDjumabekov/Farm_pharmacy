@@ -56,6 +56,13 @@ export const Navigation = () => {
               })}
             />
 
+            {/* /////////////////////// cameraQRCode ///////////////////////*/}
+            <Stack.Screen
+              name="ScannerScreen"
+              component={ScannerScreen}
+              options={{ title: "Сканер" }}
+            />
+
             {/* /////////////////////// HistoryBalance ///////////////////////*/}
             <Stack.Screen
               name="HistoryBalance"
@@ -84,13 +91,6 @@ export const Navigation = () => {
               name="SoputkaProdHistoryScreen"
               component={SoputkaProdHistoryScreen}
               options={{ title: "Сопутствующие товары" }}
-            />
-            {/* /////////////////////// cameraQRCode ///////////////////////*/}
-
-            <Stack.Screen
-              name="ScannerScreen"
-              component={ScannerScreen} /////  Сканер
-              options={{ title: "Сканер" }}
             />
             {/* /////////////////////// Бонусы ///////////////////////*/}
             <Stack.Screen

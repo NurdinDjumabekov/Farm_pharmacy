@@ -6,7 +6,6 @@ import { ViewContainer } from "../customsTags/ViewContainer";
 import { ViewButton } from "../customsTags/ViewButton";
 import { logInAccount } from "../store/reducers/requestSlice";
 import { useEffect } from "react";
-import { ViewImg } from "../customsTags/ViewImg";
 
 export const LoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -33,25 +32,10 @@ export const LoginScreen = ({ navigation }) => {
     dispatch(clearLogin());
   }, []);
 
-  const link = "http://riha-operator.333.kg/image/rikha.png";
-
   return (
     <View styles={{ position: "relative" }}>
       <ViewContainer>
         <View>
-          {/* <ViewImg
-            url={link}
-            stylesImg={{
-              width: 200,
-              height: 100,
-              objectFit: "contain",
-              marginBottom: 20,
-            }}
-            stylesDiv={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          /> */}
           <ViewInput
             text="Введите логин"
             value={dataLogin?.login}

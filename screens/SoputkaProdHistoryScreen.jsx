@@ -8,7 +8,7 @@ import {
 } from "../store/reducers/requestSlice";
 import { ViewButton } from "../customsTags/ViewButton";
 import { formatCount } from "../helpers/amounts";
-import ConfirmationModal from "../components/ConfirmationModal";
+import ConfirmationModal from "../common/ConfirmationModal";
 import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import { ScrollView } from "react-native";
