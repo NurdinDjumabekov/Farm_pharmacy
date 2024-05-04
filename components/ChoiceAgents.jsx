@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     borderColor: "rgb(217 223 232)",
     backgroundColor: "#fff",
     borderRadius: 8,
+    marginBottom: 5,
   },
 
   activeSelect: {

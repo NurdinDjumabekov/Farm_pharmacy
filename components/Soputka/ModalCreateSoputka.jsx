@@ -38,8 +38,6 @@ export const ModalCreateSoputka = (props) => {
     }
   };
 
-  // console.log(obj, "obj");
-
   return (
     <Modal
       animationType="fade"
@@ -53,7 +51,7 @@ export const ModalCreateSoputka = (props) => {
         onPress={closeModal} // Закрыть модальное окно
       >
         <View style={styles.modalInner} onPress={() => setModalState(true)}>
-          <Text style={styles.titleSelect}>Выберите агента</Text>
+          <Text style={styles.titleSelect}>Выберите доктора</Text>
           <ScrollView style={styles.selectBlock}>
             {listAgents?.map((item) => (
               <ChoiceAgents
@@ -74,7 +72,7 @@ export const ModalCreateSoputka = (props) => {
             numberOfLines={4}
           />
           <ViewButton styles={styles.sendBtn} onclick={create}>
-            + Создать
+            Подтвердить
           </ViewButton>
         </View>
       </TouchableOpacity>
@@ -134,7 +132,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: "rgb(217 223 232)",
-    borderRadius: 5,
+    borderRadius: 8,
     backgroundColor: "#f0f0f0",
     minHeight: 40,
     maxHeight: 180,

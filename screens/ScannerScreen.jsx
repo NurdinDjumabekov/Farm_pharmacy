@@ -3,16 +3,18 @@ import { Text, View, StyleSheet, Vibration } from "react-native";
 import { Camera } from "expo-camera";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import BarcodeMask from "react-native-barcode-mask";
-import { Button } from "react-native";
 import { checkQR_code } from "../store/reducers/requestSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export const ScannerScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
-  const [permission, requestPermission] = Camera.useCameraPermissions(); //// разрешение для камеры
+  const [permission, requestPermission] = Camera.useCameraPermissions();
+  //// разрешение для камеры
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+
+  const { data } = useSelector((state) => state.saveDataSlice);
 
   useEffect(() => {
     (async () => {
@@ -21,10 +23,12 @@ export const ScannerScreen = ({ navigation }) => {
     })();
   }, []);
 
+  const seller_guid = data?.seller_guid;
+
   const showResultModal = async ({ data }) => {
     if (data && !scanned) {
       setScanned(true);
-      dispatch(checkQR_code({ data, navigation }));
+      dispatch(checkQR_code({ data, navigation, seller_guid }));
       // Вызов вибрации при обнаружении QR-кода
       Vibration.vibrate(); // Простая вибрация
     }
@@ -41,7 +45,7 @@ export const ScannerScreen = ({ navigation }) => {
         <Text style={{ textAlign: "center" }}>
           Разрешите доступ к камере в настройках вашего устройства!
         </Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        {/* <Button onPress={requestPermission} title="grant permission" /> */}
       </View>
     );
   }

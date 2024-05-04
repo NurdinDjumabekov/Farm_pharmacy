@@ -3,7 +3,7 @@ import { RefreshControl, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import {
   confirmSoputka,
-  deleteSoldProd,
+  deleteSoputkaProd,
   getListSoputkaProd,
 } from "../store/reducers/requestSlice";
 import { ViewButton } from "../customsTags/ViewButton";
@@ -29,35 +29,43 @@ export const SoputkaProdHistoryScreen = ({ navigation, route }) => {
   useEffect(() => {
     getData();
     navigation.setOptions({
-      title: `${listProdSoputka?.[0]?.date}`,
+      title: `${listProdSoputka?.[0]?.doctor}`,
     });
-  }, [listProdSoputka?.[0]?.date]);
+
+    // listProdSoputka?.length === 0 && navigation?.navigate("Soputka");
+    ////// перевожу пользователя на другую страницу, если список пустой
+  }, [listProdSoputka?.[0]?.doctor]);
 
   const getData = () => {
     dispatch(getListSoputkaProd(guidInvoice));
   };
 
   const confirmBtn = () => {
-    dispatch(confirmSoputka({ invoice_guid: guidInvoice, navigation }));
+    const products = listProdSoputka?.[0]?.list?.map((item) => ({
+      guid: item?.guid,
+    }));
+    const sendData = { products, invoice_guid: guidInvoice };
+
+    dispatch(confirmSoputka({ sendData, navigation }));
     /// подтверждение накладной сопутки
-    // console.log(invoice_guid, "invoice_guid");
   };
 
   const addProd = () => {
-    const forAddTovar = { invoice_guid: guidInvoice };
+    const forAddTovar = { guid: guidInvoice };
     navigation?.navigate("AddProdSoputkaSrceen", { forAddTovar });
   };
 
   const del = (product_guid) => {
-    dispatch(deleteSoldProd({ product_guid, getData }));
+    dispatch(deleteSoputkaProd({ product_guid, getData }));
     setModalItemGuid(null);
   };
 
-  const status = listProdSoputka?.[0]?.status === 0; /// 0 - не подтверждён
+  const status = listProdSoputka?.[0]?.status === 0;
+  /// 0 - не подтверждён else подтверждён
 
   const listData = listProdSoputka?.[0]?.list;
 
-  // console.log(invoice_guid, "listProdSoputka");
+  console.log(listData, "listProdSoputka");
 
   return (
     <>
@@ -74,10 +82,13 @@ export const SoputkaProdHistoryScreen = ({ navigation, route }) => {
                 <View style={styles.mainData}>
                   <View style={styles.mainDataInner}>
                     <Text style={styles.titleNum}>{item.codeid}</Text>
-                    <Text style={styles.sum}>
-                      {item.product_price} х {item.count} ={" "}
-                      {formatCount(item.total)} сом
-                    </Text>
+                    <View>
+                      <Text style={styles.date}>{item.date} </Text>
+                      <Text style={styles.sum}>
+                        {item.product_price} х {item.count} ={" "}
+                        {formatCount(item.total)} сом
+                      </Text>
+                    </View>
                   </View>
                   {status && (
                     <TouchableOpacity
@@ -92,7 +103,7 @@ export const SoputkaProdHistoryScreen = ({ navigation, route }) => {
                 <Text style={styles.title}>{item.product_name}</Text>
               </View>
               <ConfirmationModal
-                visible={modalItemGuid === item.guid}
+                visible={modalItemGuid === item?.guid}
                 message="Отменить продажу ?"
                 onYes={() => del(item.guid)}
                 onNo={() => setModalItemGuid(null)}
@@ -179,11 +190,19 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 
-  sum: {
-    fontSize: 16,
+  date: {
+    fontSize: 15,
     fontWeight: "500",
     borderRadius: 5,
-    lineHeight: 17,
+    lineHeight: 16,
+    color: "rgba(12, 169, 70, 0.9)",
+  },
+
+  sum: {
+    fontSize: 14,
+    fontWeight: "500",
+    borderRadius: 5,
+    lineHeight: 16,
     color: "rgba(47, 71, 190, 0.672)",
   },
 

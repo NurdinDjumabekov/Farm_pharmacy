@@ -37,12 +37,18 @@ export const SoputkaProductScreen = ({ route, navigation }) => {
     ////// удаление продуктов сопутки
   };
 
-  // const { invoice_guid } = listProdSoputka?.[0];
+  console.log(listProdSoputka?.[0]?.list, "listProdSoputka555");
 
   const confirmBtn = () => {
-    dispatch(confirmSoputka({ invoice_guid: guidInvoice, navigation }));
+    const products = listProdSoputka?.[0]?.list?.map((item) => ({
+      guid: item?.guid,
+    }));
+    const sendData = { products, invoice_guid: guidInvoice };
+    dispatch(confirmSoputka({ sendData, navigation }));
     ///// подтверждение накладной сопутки
   };
+
+  //////// беру в списке товаров guid для отправки для подтверждения
 
   const none = listProdSoputka?.[0]?.list?.length === 0;
   const moreOne = listProdSoputka?.[0]?.list?.length > 0;

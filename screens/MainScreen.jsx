@@ -62,6 +62,7 @@ export const MainScreen = ({ navigation }) => {
         </View>
       </SafeAreaView>
       {/* <QRCode value="Нурдин Джумабеков" /> */}
+      {/* ///// delete  */}
     </ViewContainer>
   );
 };

@@ -40,8 +40,9 @@ export const SoputkaScreen = ({ navigation }) => {
   const getData = async () => {
     await getLocalDataUser({ changeLocalData, dispatch });
     await dispatch(getHistorySoputka(data?.seller_guid));
-    await dispatch(getListAgents(data?.seller_guid));
+    await dispatch(getListAgents({ seller_guid: data?.seller_guid }));
   };
+  // console.log(data?.seller_guid, "data?.seller_guid");
 
   const nav = (guidInvoice) => {
     navigation.navigate("SoputkaProdHistoryScreen", { guidInvoice });
@@ -55,7 +56,7 @@ export const SoputkaScreen = ({ navigation }) => {
             styles={styles.soputka}
             onclick={() => setModalState(true)}
           >
-            + Создать накладную
+            + Продать товар
           </ViewButton>
         </View>
         <View style={styles.selectBlock}>
@@ -69,6 +70,7 @@ export const SoputkaScreen = ({ navigation }) => {
               >
                 <View style={styles.everyProdInner}>
                   <View style={styles.blockTitle}>
+                    <Text style={styles.nameDoctor}>{item?.doctor}</Text>
                     <View style={styles.blockTitleInner}>
                       <Text style={styles.titleNum}>{index + 1} </Text>
                       <View>
@@ -219,18 +221,26 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 
+  nameDoctor: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#222",
+    lineHeight: 16,
+    marginBottom: 5,
+  },
+
   sum: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "500",
     color: "rgba(12, 169, 70, 0.9)",
-    lineHeight: 17,
+    lineHeight: 16,
   },
 
   date: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "500",
     color: "rgba(47, 71, 190, 0.687)",
-    lineHeight: 22,
+    lineHeight: 16,
   },
 
   comment: {

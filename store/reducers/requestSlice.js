@@ -99,7 +99,8 @@ export const getHistoryBalance = createAsyncThunk(
 export const checkQR_code = createAsyncThunk(
   /// чекаю QR код
   "checkQR_code",
-  async function ({ data, navigation }, { dispatch, rejectWithValue }) {
+  async function (props, { dispatch, rejectWithValue }) {
+    const { data, navigation, seller_guid } = props;
     try {
       const response = await axios({ url: `${API}/farm/scan?qrcode=${data}` });
       if (response.status >= 200 && response.status < 300) {
@@ -110,6 +111,8 @@ export const checkQR_code = createAsyncThunk(
         } else {
           await navigation.navigate("Main");
           await navigation.navigate("Soputka");
+          const dataObj = { qrcode: data, seller_guid, comment: "" };
+          await dispatch(createInvoiceSoputkaTT({ navigation, dataObj }));
         }
       } else {
         throw Error(`Error: ${response.status}`);
@@ -126,14 +129,16 @@ export const checkQR_code = createAsyncThunk(
 export const getListAgents = createAsyncThunk(
   /// список товаров сопутки
   "getListAgents",
-  async function (seller_guid, { dispatch, rejectWithValue }) {
+  async function ({ seller_guid, check }, { dispatch, rejectWithValue }) {
     try {
       const response = await axios({
         method: "GET",
         url: `${API}/farm/get_doctors`,
       });
       if (response.status >= 200 && response.status < 300) {
-        console.log(response?.data, "response?.data");
+        const guid = response?.data?.[0]?.guid;
+        /// check (true) - беру докторов для отображения в остатках (false - в остальных компонетах)
+        check && dispatch(getCategDoctor({ guid, seller_guid }));
         return response?.data;
       } else {
         throw Error(`Error: ${response.status}`);
@@ -165,11 +170,12 @@ export const getHistorySoputka = createAsyncThunk(
   }
 );
 
+///// createInvoiceSoputkaTT
+////// создание накладной для продажи
 export const createInvoiceSoputkaTT = createAsyncThunk(
   "createInvoiceSoputkaTT",
   async function (props, { dispatch, rejectWithValue }) {
     const { dataObj, navigation } = props;
-    // console.log(props);
     try {
       const response = await axios({
         method: "POST",
@@ -177,10 +183,10 @@ export const createInvoiceSoputkaTT = createAsyncThunk(
         data: dataObj,
       });
       if (response.status >= 200 && response.status < 300) {
-        console.log(response?.data, "createInvoiceSoputkaTT");
         navigation?.navigate("AddProdSoputkaSrceen", {
           forAddTovar: response?.data,
         });
+        console.log(response?.data, "response?.data");
         return response?.data;
       } else {
         throw Error(`Error: ${response.status}`);
@@ -196,17 +202,16 @@ export const getCategoryTT = createAsyncThunk(
   "getCategoryTT",
   /// для получения катеогрий товаров ТТ
   async function (props, { dispatch, rejectWithValue }) {
-    const { checkComponent, seller_guid, type } = props;
+    const { checkComponent, seller_guid, type, doctor_guid } = props;
     const urlLink = !checkComponent
       ? `${API}/farm/get_category_all` //// для сопутки
-      : `${API}/tt/get_category?seller_guid=${seller_guid}`; //// для пр0дажи
-
+      : `${API}/farm/get_category?doctor_guid=${doctor_guid}`; //// для пр0дажи
     try {
       const response = await axios(urlLink);
       if (response.status >= 200 && response.status < 300) {
         if (type === "leftovers") {
           const initilalCateg = response?.data?.[0]?.category_guid;
-          dispatch(getMyLeftovers({ seller_guid, initilalCateg: "0" }));
+          dispatch(getMyLeftovers({ doctor_guid, initilalCateg }));
           //// для страницы остатков вызываю первую категорию
         } else if (type === "sale&&soputka") {
           ////// для продажи и с0путки
@@ -235,31 +240,11 @@ export const getProductTT = createAsyncThunk(
   async function (props, { dispatch, rejectWithValue }) {
     const { guid, seller_guid, checkComponent } = props;
     const urlLink = !checkComponent
-      ? `${API}/tt/get_product_all?categ_guid=${guid}` //// для сопутки
-      : `${API}/tt/get_product?categ_guid=${guid}&seller_guid=${seller_guid}`; //// для пр0дажи
+      ? `${API}/farm/get_product_all?categ_guid=${guid}` //// для сопутки
+      : `${API}/farm/get_product?categ_guid=${guid}&seller_guid=${seller_guid}`; //// для пр0дажи
+    ///// нижнее удалить
     try {
       const response = await axios(urlLink);
-      if (response.status >= 200 && response.status < 300) {
-        return response?.data;
-      } else {
-        throw Error(`Error: ${response.status}`);
-      }
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-/// getMyLeftovers
-export const getMyLeftovers = createAsyncThunk(
-  "getMyLeftovers",
-  async function (props, { dispatch, rejectWithValue }) {
-    const { seller_guid, initilalCateg } = props;
-    try {
-      const response = await axios({
-        method: "GET",
-        url: `${API}/tt/get_report_leftovers?seller_guid=${seller_guid}&categ_guid=${initilalCateg}`,
-      });
       if (response.status >= 200 && response.status < 300) {
         return response?.data;
       } else {
@@ -306,7 +291,7 @@ export const createInvoiceTT = createAsyncThunk(
         data: { seller_guid },
       });
       if (response.status >= 200 && response.status < 300) {
-        // console.log(response?.data);
+        console.log(response?.data);
         return { codeid: response?.data?.codeid, guid: response?.data?.guid };
       } else {
         throw Error(`Error: ${response.status}`);
@@ -356,10 +341,9 @@ export const getListSoputkaProd = createAsyncThunk(
     try {
       const response = await axios({
         method: "GET",
-        url: `${API}/tt/get_point_invoice_product?invoice_guid=${guidInvoice}`,
+        url: `${API}/farm/get_point_invoice_product?invoice_guid=${guidInvoice}`,
       });
       if (response.status >= 200 && response.status < 300) {
-        // console.log(response?.data, "getListSoputkaProd");
         return response?.data;
       } else {
         throw Error(`Error: ${response.status}`);
@@ -379,7 +363,7 @@ export const deleteSoputkaProd = createAsyncThunk(
     try {
       const response = await axios({
         method: "POST",
-        url: `${API}/tt/del_soputka`,
+        url: `${API}/farm/del_product`,
         data: { product_guid },
       });
       if (response.status >= 200 && response.status < 300) {
@@ -399,15 +383,15 @@ export const deleteSoputkaProd = createAsyncThunk(
 export const confirmSoputka = createAsyncThunk(
   /// подверждение товаров сопутки
   "confirmSoputka",
-  async function ({ invoice_guid, navigation }, { dispatch, rejectWithValue }) {
+  async function ({ sendData, navigation }, { dispatch, rejectWithValue }) {
+    console.log(sendData, "sendData");
     try {
       const response = await axios({
         method: "POST",
-        url: `${API}/tt/confirm_invoice_soputka`,
-        data: { invoice_guid },
+        url: `${API}/farm/point_conf_inv`,
+        data: sendData,
       });
       if (response.status >= 200 && response.status < 300) {
-        // console.log(response?.data,"confirmSoputka");
         if (+response?.data?.result === 1) {
           navigation.navigate("Main");
         }
@@ -421,6 +405,55 @@ export const confirmSoputka = createAsyncThunk(
 );
 
 /////////////////////////////// sale ////////////////////////////////
+
+/////////////////////////////// Leftovers ////////////////////////////////
+
+/// getMyLeftovers
+export const getMyLeftovers = createAsyncThunk(
+  "getMyLeftovers",
+  async function (props, { dispatch, rejectWithValue }) {
+    const { doctor_guid, initilalCateg } = props;
+    try {
+      const response = await axios({
+        method: "GET",
+        url: `${API}/farm/get_report_leftovers?doctor_guid=${doctor_guid}&categ_guid=${initilalCateg}`,
+      });
+      if (response.status >= 200 && response.status < 300) {
+        return response?.data;
+      } else {
+        throw Error(`Error: ${response.status}`);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+/// getCategDoctor
+//// беру катег0рию каждого доктора
+export const getCategDoctor = createAsyncThunk(
+  "getCategDoctor",
+  async function ({ guid, seller_guid }, { dispatch, rejectWithValue }) {
+    try {
+      const response = await axios({
+        method: "GET",
+        url: `${API}/farm/get_category?doctor_guid=${guid}`,
+      });
+      if (response.status >= 200 && response.status < 300) {
+        console.log(response?.data);
+        const obj = { doctor_guid: guid, type: "leftovers" };
+        await dispatch(getCategoryTT({ ...obj, checkComponent: true }));
+        return response?.data;
+      } else {
+        throw Error(`Error: ${response.status}`);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+/////////////////////////////// Leftovers ////////////////////////////////
 
 /////////////////////////////// pay ////////////////////////////////
 
@@ -562,6 +595,26 @@ const requestSlice = createSlice({
       state.preloader = false;
     });
     builder.addCase(getCategoryTT.pending, (state, action) => {
+      state.preloader = true;
+    });
+
+    //////// getCategDoctor
+    builder.addCase(getCategDoctor.fulfilled, (state, action) => {
+      state.preloader = false;
+      const allCategory = { label: "Все", value: "0" };
+      const categories = action.payload?.map(
+        ({ category_name, category_guid }, ind) => ({
+          label: `${ind + 1}. ${category_name}`,
+          value: category_guid,
+        })
+      );
+      state.listCategory = [allCategory, ...categories];
+    });
+    builder.addCase(getCategDoctor.rejected, (state, action) => {
+      state.error = action.payload;
+      state.preloader = false;
+    });
+    builder.addCase(getCategDoctor.pending, (state, action) => {
       state.preloader = true;
     });
 

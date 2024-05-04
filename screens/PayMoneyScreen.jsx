@@ -35,7 +35,7 @@ export const PayMoneyScreen = ({ navigation }) => {
   const getData = async () => {
     await getLocalDataUser({ changeLocalData, dispatch });
     await dispatch(getHistoryBalance(data?.seller_guid));
-    await dispatch(getListAgents(data?.seller_guid));
+    await dispatch(getListAgents({ seller_guid: data?.seller_guid }));
   };
 
   return (
