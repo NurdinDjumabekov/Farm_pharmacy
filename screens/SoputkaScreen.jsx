@@ -42,7 +42,6 @@ export const SoputkaScreen = ({ navigation }) => {
     await dispatch(getHistorySoputka(data?.seller_guid));
     await dispatch(getListAgents({ seller_guid: data?.seller_guid }));
   };
-  // console.log(data?.seller_guid, "data?.seller_guid");
 
   const nav = (guidInvoice) => {
     navigation.navigate("SoputkaProdHistoryScreen", { guidInvoice });
@@ -76,7 +75,7 @@ export const SoputkaScreen = ({ navigation }) => {
                       <View>
                         <Text style={styles.date}>{item?.date}</Text>
                         <Text style={styles.sum}>
-                          {formatCount(item?.total_price)} сом
+                          {formatCount(item?.total_price)} сомони
                         </Text>
                       </View>
                     </View>

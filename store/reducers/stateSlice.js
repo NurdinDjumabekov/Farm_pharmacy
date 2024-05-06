@@ -32,6 +32,13 @@ const initialState = {
     invoice_guid: "",
     products: [],
   },
+
+  doctorGuid: {},
+  //// для состояние селекта на странице бонусов(храню guid доктора в виде value)
+  ////  Установка значения по умолчанию для категории
+  categoryGuid: {},
+  //// для состояние селекта на странице бонусов(храню guid категории в виде value)
+  // Установка значения по умолчанию для докторов
 };
 
 const stateSlice = createSlice({
@@ -110,6 +117,14 @@ const stateSlice = createSlice({
     changeReturnProd: (state, action) => {
       state.returnProducts = action.payload;
     },
+
+    doctorGuidFN: (state, action) => {
+      state.doctorGuid = action.payload;
+    },
+
+    categoryGuidFN: (state, action) => {
+      state.categoryGuid = action.payload;
+    },
   },
 });
 export const {
@@ -129,6 +144,8 @@ export const {
   changeExpense,
   clearExpense,
   changeReturnProd,
+  doctorGuidFN,
+  categoryGuidFN,
 } = stateSlice.actions;
 
 export default stateSlice.reducer;

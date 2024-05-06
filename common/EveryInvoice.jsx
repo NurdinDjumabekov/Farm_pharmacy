@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import { RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
@@ -10,8 +10,9 @@ import { changeLocalData } from "../store/reducers/saveDataSlice";
 import { changeSearchProd } from "../store/reducers/stateSlice";
 
 import { ActionsEveryInvoice } from "./ActionsEveryInvoice";
+import { SearchProds } from "../components/Soputka/SearchProds";
 
-export const EveryInvoice = ({ forAddTovar }) => {
+export const EveryInvoice = ({ navigation, forAddTovar }) => {
   const dispatch = useDispatch();
   const route = useRoute();
 
@@ -38,6 +39,14 @@ export const EveryInvoice = ({ forAddTovar }) => {
     dispatch(changeSearchProd(""));
     ////// очищаю поиск
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <SearchProds getData={getData} navigation={navigation} />
+      ),
+    });
+  }, []);
 
   const emptyData = listCategory?.length === 0;
 

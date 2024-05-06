@@ -68,7 +68,7 @@
 //         <View style={styles.mainDataArrow}>
 //           <View>
 //             <Text style={styles.status}>Выручка</Text>
-//             <Text style={styles.totalPrice}>{obj?.total_price} сом</Text>
+//             <Text style={styles.totalPrice}>{obj?.total_price} сомони</Text>
 //           </View>
 //           <View style={styles.arrow}></View>
 //         </View>

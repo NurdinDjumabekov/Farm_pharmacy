@@ -88,11 +88,11 @@ export const AddProducts = (props) => {
             <View style={styles.addDataBlock}>
               <TextInput
                 style={styles.input}
-                value={`${dataInputsInv?.price?.toString()} сом`}
+                value={`${dataInputsInv?.price?.toString()} сомони`}
                 onChangeText={(text) => onChange("price", text)}
                 keyboardType="numeric"
                 placeholder="Цена"
-                maxLength={8}
+                maxLength={15}
               />
               <TextInput
                 style={styles.input}

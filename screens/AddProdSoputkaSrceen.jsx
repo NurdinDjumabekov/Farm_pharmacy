@@ -10,16 +10,13 @@ import {
   changeTemporaryData,
 } from "../store/reducers/stateSlice";
 import { EveryInvoice } from "../common/EveryInvoice";
-import { transformDate } from "../helpers/transformDate";
+
 export const AddProdSoputkaSrceen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const { forAddTovar } = route.params; //// хранятся данные накладной сапутки
 
   useEffect(() => {
     defaultActive();
-    navigation.setOptions({
-      title: `${transformDate(new Date())}`,
-    });
 
     return () => {
       dispatch(clearListCategory());
@@ -42,7 +39,7 @@ export const AddProdSoputkaSrceen = ({ navigation, route }) => {
   return (
     <View style={styles.parentBlock}>
       <TouchableOpacity onPress={listProdSale} style={styles.arrow}>
-        <Text style={styles.textBtn}>Список сопутствующих товаров</Text>
+        <Text style={styles.textBtn}>Список проданных товаров</Text>
         <View style={styles.arrowInner}></View>
       </TouchableOpacity>
       <EveryInvoice navigation={navigation} forAddTovar={forAddTovar} />

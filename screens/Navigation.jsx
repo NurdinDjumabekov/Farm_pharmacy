@@ -79,6 +79,7 @@ export const Navigation = () => {
             <Stack.Screen
               name="AddProdSoputkaSrceen"
               component={AddProdSoputkaSrceen}
+              options={{ title: "" }}
             />
             <Stack.Screen
               name="SoputkaProductScreen"

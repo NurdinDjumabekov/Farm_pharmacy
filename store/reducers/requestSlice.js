@@ -2,14 +2,14 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API } from "../../env";
 import {
-  changeAcceptInvoiceTT,
+  categoryGuidFN,
   changeActiveSelectCategory,
   changeSearchProd,
   changeStateForCategory,
   changeTemporaryData,
   clearDataInputsInv,
-  clearExpense,
   clearLogin,
+  doctorGuidFN,
 } from "./stateSlice";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -113,6 +113,8 @@ export const checkQR_code = createAsyncThunk(
           await navigation.navigate("Soputka");
           const dataObj = { qrcode: data, seller_guid, comment: "" };
           await dispatch(createInvoiceSoputkaTT({ navigation, dataObj }));
+          const fioDoctor = response?.data?.doctor?.[0]?.fio;
+          Alert.alert(`Врач: ${fioDoctor}`);
         }
       } else {
         throw Error(`Error: ${response.status}`);
@@ -138,7 +140,7 @@ export const getListAgents = createAsyncThunk(
       if (response.status >= 200 && response.status < 300) {
         const guid = response?.data?.[0]?.guid;
         /// check (true) - беру докторов для отображения в остатках (false - в остальных компонетах)
-        check && dispatch(getCategDoctor({ guid, seller_guid }));
+        check && dispatch(getCategDoctor({ guid }));
         return response?.data;
       } else {
         throw Error(`Error: ${response.status}`);
@@ -211,7 +213,8 @@ export const getCategoryTT = createAsyncThunk(
       if (response.status >= 200 && response.status < 300) {
         if (type === "leftovers") {
           const initilalCateg = response?.data?.[0]?.category_guid;
-          dispatch(getMyLeftovers({ doctor_guid, initilalCateg }));
+          dispatch(doctorGuidFN(doctor_guid));
+          await dispatch(getMyLeftovers({ doctor_guid, initilalCateg }));
           //// для страницы остатков вызываю первую категорию
         } else if (type === "sale&&soputka") {
           ////// для продажи и с0путки
@@ -263,7 +266,7 @@ export const searchProdTT = createAsyncThunk(
   async function (props, { dispatch, rejectWithValue }) {
     const { searchProd, seller_guid, checkComponent } = props;
     const urlLink = !checkComponent
-      ? `${API}/tt/get_product_all?search=${searchProd}` //// для сопутки
+      ? `${API}/farm/get_product_all?search=${searchProd}` //// для сопутки
       : `${API}/tt/get_product?search=${searchProd}&seller_guid=${seller_guid}`; //// для пр0дажи
     try {
       const response = await axios(urlLink);
@@ -419,6 +422,9 @@ export const getMyLeftovers = createAsyncThunk(
         url: `${API}/farm/get_report_leftovers?doctor_guid=${doctor_guid}&categ_guid=${initilalCateg}`,
       });
       if (response.status >= 200 && response.status < 300) {
+        const newInitilalCateg = initilalCateg || {};
+        //// value в селекте undefibed или null быть не может!
+        dispatch(categoryGuidFN(newInitilalCateg));
         return response?.data;
       } else {
         throw Error(`Error: ${response.status}`);
@@ -433,14 +439,13 @@ export const getMyLeftovers = createAsyncThunk(
 //// беру катег0рию каждого доктора
 export const getCategDoctor = createAsyncThunk(
   "getCategDoctor",
-  async function ({ guid, seller_guid }, { dispatch, rejectWithValue }) {
+  async function ({ guid }, { dispatch, rejectWithValue }) {
     try {
       const response = await axios({
         method: "GET",
         url: `${API}/farm/get_category?doctor_guid=${guid}`,
       });
       if (response.status >= 200 && response.status < 300) {
-        console.log(response?.data);
         const obj = { doctor_guid: guid, type: "leftovers" };
         await dispatch(getCategoryTT({ ...obj, checkComponent: true }));
         return response?.data;
@@ -455,7 +460,7 @@ export const getCategDoctor = createAsyncThunk(
 
 /////////////////////////////// Leftovers ////////////////////////////////
 
-/////////////////////////////// pay ////////////////////////////////
+/////////////////////////////// Pay ////////////////////////////////
 
 /// acceptMoney
 export const acceptMoney = createAsyncThunk(
@@ -633,26 +638,25 @@ const requestSlice = createSlice({
 
     //////// searchProdTT
     builder.addCase(searchProdTT.fulfilled, (state, action) => {
-      state.preloader = false;
+      // state.preloader = false;
       state.listProductTT = action.payload;
     });
     builder.addCase(searchProdTT.rejected, (state, action) => {
       state.error = action.payload;
-      state.preloader = false;
+      // state.preloader = false;
     });
     builder.addCase(searchProdTT.pending, (state, action) => {
-      state.preloader = true;
+      // state.preloader = true;
     });
 
     //////// getMyLeftovers
     builder.addCase(getMyLeftovers.fulfilled, (state, action) => {
       state.preloader = false;
       state.listLeftovers = action.payload?.map((item, ind) => [
-        `${ind + 1}. ${item.product_name}`,
-        `${item.start_outcome}`,
-        `${item.income}`,
-        `${item.outcome}`,
-        `${item.end_outcome}`,
+        `${ind + 1}. ${item?.product_name}`,
+        `${item?.income}`,
+        `${item?.count}`,
+        `${item?.bonuse || 0}`,
       ]);
       state.listLeftoversForReturn = action.payload?.filter(
         (item) => item?.end_outcome !== 0
@@ -661,7 +665,7 @@ const requestSlice = createSlice({
     builder.addCase(getMyLeftovers.rejected, (state, action) => {
       state.error = action.payload;
       state.preloader = false;
-      Alert.alert("Упс, что-то пошло не так! Не удалось загрузить данные");
+      Alert.alert("Упс, что-то пошло не так! Не удалось загрузить данные!");
     });
     builder.addCase(getMyLeftovers.pending, (state, action) => {
       state.preloader = true;
@@ -803,7 +807,7 @@ const requestSlice = createSlice({
       state.listSellersPoints = action.payload;
     },
     clearListAgents: (state, action) => {
-      state.listAgents = action.payload;
+      state.listAgents = [];
     },
   },
 });

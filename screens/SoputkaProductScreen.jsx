@@ -73,7 +73,7 @@ export const SoputkaProductScreen = ({ route, navigation }) => {
                       </Text>
                       <Text style={styles.totalPrice}>
                         {item?.product_price} х {item?.count} = {item?.total}{" "}
-                        сом
+                        сомони
                       </Text>
                     </View>
                   </View>

@@ -43,7 +43,7 @@ export const MainScreen = ({ navigation }) => {
                 <Text style={styles.balanceText}>Бонусы</Text>
                 <View style={styles.arrow}></View>
               </View>
-              <Text style={styles.balanceNum}>{balance || 0} сом</Text>
+              <Text style={styles.balanceNum}>{balance || 0} сомони</Text>
             </View>
             <Text style={styles.balanceHistory}>История</Text>
           </TouchableOpacity>

@@ -1,6 +1,17 @@
 import { useEffect } from "react";
 import { Dimensions, RefreshControl, SafeAreaView, View } from "react-native";
 import { ScrollView, StyleSheet, Text } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
+import { Table, Row, Rows, TableWrapper } from "react-native-table-component";
+
+///// helpers
+import { listTableLeftoverst } from "../helpers/Data";
+import { getLocalDataUser } from "../helpers/returnDataUser";
+import { transformListForSelect } from "../helpers/transformListForSelect";
+
+//// redux
+import { changeLocalData } from "../store/reducers/saveDataSlice";
+import { categoryGuidFN, doctorGuidFN } from "../store/reducers/stateSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
   changeLeftovers,
@@ -9,55 +20,51 @@ import {
   getListAgents,
   getMyLeftovers,
 } from "../store/reducers/requestSlice";
-import { Table, Row, Rows, TableWrapper } from "react-native-table-component";
-import { listTableLeftoverst } from "../helpers/Data";
-import { getLocalDataUser } from "../helpers/returnDataUser";
-import { changeLocalData } from "../store/reducers/saveDataSlice";
-import RNPickerSelect from "react-native-picker-select";
-import { useState } from "react";
-import { transformListForSelect } from "../helpers/transformListForSelect";
 
 export const LeftoversScreen = () => {
   const dispatch = useDispatch();
+
   const { data } = useSelector((state) => state.saveDataSlice);
+
+  const { doctorGuid, categoryGuid } = useSelector((state) => state.stateSlice);
 
   const { preloader, listLeftovers, listCategory, listAgents } = useSelector(
     (state) => state.requestSlice
   );
 
-  const [dataCateg, setDataCateg] = useState({});
-  // Установка значения по умолчанию для категории
-  const [dataDoctor, setDataDoctor] = useState({});
-  // Установка значения по умолчанию для докторов
+  // console.log(listLeftovers, "listLeftovers");
 
   useEffect(() => {
     getData();
     return () => {
+      ///// очищаю все данные на выходе с этой стр
       dispatch(changeLeftovers([]));
       dispatch(clearListCategory());
+      dispatch(doctorGuidFN({}));
+      dispatch(categoryGuidFN({}));
     };
   }, []);
 
+  const seller_guid = data?.seller_guid;
+
   const getData = async () => {
-    // const obj = { seller_guid: data?.seller_guid, type: "leftovers" };
-    // await dispatch(getCategoryTT({ ...obj, checkComponent: true }));
-    // ///// get cписок категорий, продукты которых у меня есть
-    // setDataCateg(listCategory?.[0]);
-    // /// пропускаю категорию "Все" и сразу отображаю вторую категорию
-
-    /////////////////////
     await getLocalDataUser({ changeLocalData, dispatch });
-
-    await dispatch(
-      getListAgents({ seller_guid: data?.seller_guid, check: true })
-    );
+    await dispatch(getListAgents({ seller_guid, check: true }));
   };
 
-  // console.log(listAgents, "listAgents");
-  // console.log(listCategory, "listCategory");
+  const onChangeDoctor = (value) => {
+    dispatch(doctorGuidFN(value));
+    dispatch(getCategDoctor({ guid: value, seller_guid }));
+  };
+
+  const onChangeCateg = (value) => {
+    const objData = { doctor_guid: doctorGuid, initilalCateg: value };
+    dispatch(getMyLeftovers(objData));
+  };
 
   const windowWidth = Dimensions.get("window").width;
   const arrWidth = [45, 19, 18, 18]; //  проценты %
+
   const resultWidths = arrWidth.map(
     (percentage) => (percentage / 100) * windowWidth
   );
@@ -70,21 +77,11 @@ export const LeftoversScreen = () => {
     }
   };
 
-  const onChangeDoctor = (value) => {
-    setDataDoctor(value);
-    dispatch(getCategDoctor(value));
-  };
+  const nonDate = listCategory?.length === 0;
 
-  const onChangeCateg = (value) => {
-    setDataCateg(value);
-    const objData = { doctor_guid: dataDoctor, initilalCateg: value };
-    dispatch(getMyLeftovers(objData));
-    console.log(dataDoctor, "dataDoctor");
-  };
-
-  const listCategoryNew = listCategory?.slice(1, 250);
-
-  // console.log(listCategoryNew, "listCategoryNew");
+  const listCategoryNew = nonDate
+    ? [{ label: "", value: "" }] /// селект не может быть пустым, поэтому добалвяю пустые полня если нет данных
+    : listCategory?.slice(1, 250); /// убираю категрию "Все"
 
   return (
     <ScrollView
@@ -102,7 +99,7 @@ export const LeftoversScreen = () => {
             <RNPickerSelect
               onValueChange={onChangeDoctor}
               items={transformListForSelect(listAgents)}
-              value={dataDoctor}
+              value={doctorGuid || {}}
               placeholder={{}}
             />
           </View>
@@ -113,8 +110,8 @@ export const LeftoversScreen = () => {
             <RNPickerSelect
               onValueChange={onChangeCateg}
               items={listCategoryNew}
-              value={dataCateg}
-              placeholder={{}}
+              value={categoryGuid || {}}
+              placeholder={nonDate ? {} : { label: "Все", value: "0" }}
             />
           </View>
         </View>
@@ -129,13 +126,11 @@ export const LeftoversScreen = () => {
             <Rows
               data={listLeftovers.map((item) => [
                 item[0], // Товар
-                item[1], // Остаток на начало
+                item[1], // Цена
+                item[2], // Кол-во
                 <Text style={{ ...styles.textStyles, color: "green" }}>
-                  {item[2]}
-                </Text>, // Приход
-                <Text style={{ ...styles.textStyles, color: "red" }}>
                   {item[3]}
-                </Text>, // Расход
+                </Text>, // Бонусы
               ])}
               textStyle={styles.textStyles}
               flexArr={resultWidths}

@@ -67,7 +67,7 @@ export const PayMoneyScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.status}>
                   <Text style={styles.good}>Успешно</Text>
-                  <Text style={styles.sum}>{item.total} сом</Text>
+                  <Text style={styles.sum}>{item.total} сомони</Text>
                 </View>
               </View>
             </View>
