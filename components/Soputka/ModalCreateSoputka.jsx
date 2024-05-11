@@ -2,7 +2,6 @@ import { StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Modal } from "react-native";
 import { TouchableOpacity } from "react-native";
-import { TextInput } from "react-native";
 import { ViewButton } from "../../customsTags/ViewButton";
 import { useState } from "react";
 import { createInvoiceSoputkaTT } from "../../store/reducers/requestSlice";
@@ -12,6 +11,7 @@ import { ChoiceAgents } from "../ChoiceAgents";
 
 export const ModalCreateSoputka = (props) => {
   //// модалка для созданя с0путки
+  ////// еще понадобится
 
   const { modalState, setModalState, navigation } = props;
 
@@ -63,14 +63,6 @@ export const ModalCreateSoputka = (props) => {
               />
             ))}
           </ScrollView>
-          <TextInput
-            style={styles.inputComm}
-            value={obj?.comment?.toString()}
-            onChangeText={(text) => setObj({ ...obj, comment: text })}
-            placeholder="Ваш комментарий"
-            multiline={true}
-            numberOfLines={4}
-          />
           <ViewButton styles={styles.sendBtn} onclick={create}>
             Подтвердить
           </ViewButton>

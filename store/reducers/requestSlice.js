@@ -4,10 +4,8 @@ import { API } from "../../env";
 import {
   categoryGuidFN,
   changeActiveSelectCategory,
-  changeSearchProd,
   changeStateForCategory,
   changeTemporaryData,
-  clearDataInputsInv,
   clearLogin,
   doctorGuidFN,
 } from "./stateSlice";
@@ -15,6 +13,7 @@ import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { changeLocalData } from "./saveDataSlice";
 import { getLocalDataUser } from "../../helpers/returnDataUser";
+import { text_none_qr_code, text_none_qr_code_prod } from "../../helpers/Data";
 
 /// logInAccount
 export const logInAccount = createAsyncThunk(
@@ -95,10 +94,10 @@ export const getHistoryBalance = createAsyncThunk(
   }
 );
 
-//// checkQR_code
-export const checkQR_code = createAsyncThunk(
+//// checkQrCodeDoctor
+export const checkQrCodeDoctor = createAsyncThunk(
   /// чекаю QR код
-  "checkQR_code",
+  "checkQrCodeDoctor",
   async function (props, { dispatch, rejectWithValue }) {
     const { data, navigation, seller_guid } = props;
     try {
@@ -106,7 +105,7 @@ export const checkQR_code = createAsyncThunk(
       if (response.status >= 200 && response.status < 300) {
         const { doctor, result } = response?.data;
         if (doctor?.length === 0 || result === 0) {
-          Alert.alert("Не удалось распознать QR-код");
+          Alert.alert(text_none_qr_code);
           await navigation.navigate("Main");
         } else {
           await navigation.navigate("Main");
@@ -115,6 +114,37 @@ export const checkQR_code = createAsyncThunk(
           await dispatch(createInvoiceSoputkaTT({ navigation, dataObj }));
           const fioDoctor = response?.data?.doctor?.[0]?.fio;
           Alert.alert(`Врач: ${fioDoctor}`);
+        }
+      } else {
+        throw Error(`Error: ${response.status}`);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+//// addProdQrCode
+/// продаю товар по QR коду
+export const addProdQrCode = createAsyncThunk(
+  "addProdQrCode",
+  async function (props, { dispatch, rejectWithValue }) {
+    const { data, navigation, seller_guid, guid } = props;
+    try {
+      const response = await axios({
+        method: "GET",
+        url: `${API}/farm/scan_product?qrcode=${data}`,
+      });
+      if (response.status >= 200 && response.status < 300) {
+        const { product } = response?.data;
+        const forAddTovar = { guid };
+        if (product?.length === 0) {
+          Alert.alert(text_none_qr_code_prod);
+          await navigation.navigate("AddProdSoputkaSrceen", { forAddTovar });
+        } else {
+          dispatch(changeTemporaryData({ ...product?.[0], ves: "1" }));
+          await navigation.navigate("AddProdSoputkaSrceen", { forAddTovar });
+          // Alert.alert(`Товар: ${product?.[0]?.product_name}`);
         }
       } else {
         throw Error(`Error: ${response.status}`);
@@ -263,15 +293,12 @@ export const getProductTT = createAsyncThunk(
 export const searchProdTT = createAsyncThunk(
   "searchProdTT",
   /// для поиска товаров
-  async function (props, { dispatch, rejectWithValue }) {
-    const { searchProd, seller_guid, checkComponent } = props;
-    const urlLink = !checkComponent
-      ? `${API}/farm/get_product_all?search=${searchProd}` //// для сопутки
-      : `${API}/tt/get_product?search=${searchProd}&seller_guid=${seller_guid}`; //// для пр0дажи
+  async function (searchText, { dispatch, rejectWithValue }) {
     try {
-      const response = await axios(urlLink);
+      const response = await axios(
+        `${API}/farm/get_product_all?search=${searchText}`
+      );
       if (response.status >= 200 && response.status < 300) {
-        dispatch(changeSearchProd(searchProd));
         return response?.data;
       } else {
         throw Error(`Error: ${response.status}`);
@@ -320,9 +347,7 @@ export const addProductSoputkaTT = createAsyncThunk(
       });
       if (response.status >= 200 && response.status < 300) {
         if (+response?.data?.result === 1) {
-          dispatch(clearDataInputsInv()); // очищаю { price: "", ves: ""}
           dispatch(changeTemporaryData({})); // очищаю активный продукт
-          dispatch(changeStateForCategory({})); ///  очищаю активную категорию
           setTimeout(() => {
             getData();
           }, 500);
@@ -783,6 +808,34 @@ const requestSlice = createSlice({
       );
     });
     builder.addCase(confirmSoputka.pending, (state, action) => {
+      state.preloader = true;
+    });
+
+    ////// checkQrCodeDoctor
+    builder.addCase(checkQrCodeDoctor.fulfilled, (state, action) => {
+      // state.preloader = false;
+    });
+    builder.addCase(checkQrCodeDoctor.rejected, (state, action) => {
+      state.error = action.payload;
+      // state.preloader = false;
+      Alert.alert(
+        "Упс, что-то пошло не так! Попробуйте перезайти в приложение..."
+      );
+    });
+    builder.addCase(checkQrCodeDoctor.pending, (state, action) => {
+      // state.preloader = true;
+    });
+
+    ////// addProdQrCode
+    builder.addCase(addProdQrCode.fulfilled, (state, action) => {
+      state.preloader = false;
+    });
+    builder.addCase(addProdQrCode.rejected, (state, action) => {
+      state.error = action.payload;
+      state.preloader = false;
+      Alert.alert("Упс, что-то пошло не так! Перезайдите в приложение...");
+    });
+    builder.addCase(addProdQrCode.pending, (state, action) => {
       state.preloader = true;
     });
   },

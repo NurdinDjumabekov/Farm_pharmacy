@@ -1,27 +1,26 @@
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { View, TouchableOpacity, RefreshControl } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import {
   confirmSoputka,
   deleteSoputkaProd,
   getListSoputkaProd,
-} from "../store/reducers/requestSlice";
-import ConfirmationModal from "../common/ConfirmationModal";
-import { ViewButton } from "../customsTags/ViewButton";
+} from "../../store/reducers/requestSlice";
+import ConfirmationModal from "../../common/ConfirmationModal";
+import { ViewButton } from "../../customsTags/ViewButton";
 
-export const SoputkaProductScreen = ({ route, navigation }) => {
+export const ListSoldProduct = ({ guidInvoice, navigation }) => {
   //// список проданных продуктов
   const dispatch = useDispatch();
-  const { guidInvoice } = route.params;
   const [modalItemGuid, setModalItemGuid] = useState(null); // Состояние для идентификатора элемента, для которого открывается модальное окно
   const [modalConfirm, setModalConfirm] = useState(false);
-
-  console.log(guidInvoice, "guidInvoice");
 
   const { preloader, listProdSoputka } = useSelector(
     (state) => state.requestSlice
   );
+
+  const list = listProdSoputka?.[0]?.list;
 
   useEffect(() => {
     getData();
@@ -37,8 +36,6 @@ export const SoputkaProductScreen = ({ route, navigation }) => {
     ////// удаление продуктов сопутки
   };
 
-  console.log(listProdSoputka?.[0]?.list, "listProdSoputka555");
-
   const confirmBtn = () => {
     const products = listProdSoputka?.[0]?.list?.map((item) => ({
       guid: item?.guid,
@@ -50,23 +47,26 @@ export const SoputkaProductScreen = ({ route, navigation }) => {
 
   //////// беру в списке товаров guid для отправки для подтверждения
 
-  const none = listProdSoputka?.[0]?.list?.length === 0;
-  const moreOne = listProdSoputka?.[0]?.list?.length > 0;
+  const none = listProdSoputka?.length === 0;
+  const moreOne = list?.length > 0;
 
   return (
-    <View>
+    <>
       {none ? (
         <Text style={styles.noneData}>Список пустой</Text>
       ) : (
-        <View style={{ paddingBottom: 150 }}>
-          <FlatList
-            contentContainerStyle={styles.flatList}
-            data={listProdSoputka?.[0]?.list}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.container}>
+        <View style={{ paddingBottom: 50 }}>
+          <View
+            style={styles.flatList}
+            refreshControl={
+              <RefreshControl refreshing={preloader} onRefresh={getData} />
+            }
+          >
+            {list?.map((item, index) => (
+              <TouchableOpacity style={styles.container} key={item?.guid}>
                 <View style={styles.parentBlock}>
                   <View style={styles.mainData}>
-                    <Text style={styles.titleNum}>{item.codeid} </Text>
+                    <Text style={styles.titleNum}>{list?.length - index} </Text>
                     <View>
                       <Text style={styles.titleDate}>
                         {item?.date || "..."}
@@ -97,12 +97,8 @@ export const SoputkaProductScreen = ({ route, navigation }) => {
                   onClose={() => setModalItemGuid(null)}
                 />
               </TouchableOpacity>
-            )}
-            keyExtractor={(item) => item?.codeid}
-            refreshControl={
-              <RefreshControl refreshing={preloader} onRefresh={getData} />
-            }
-          />
+            ))}
+          </View>
           {moreOne && (
             <ViewButton
               styles={styles.sendBtn}
@@ -120,7 +116,7 @@ export const SoputkaProductScreen = ({ route, navigation }) => {
         onNo={() => setModalConfirm(false)}
         onClose={() => setModalConfirm(false)}
       />
-    </View>
+    </>
   );
 };
 
@@ -203,7 +199,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 
-  flatList: { width: "100%", paddingTop: 8 },
+  flatList: { width: "100%", paddingTop: 2 },
 
   //////////////////// krestik
   krest: {

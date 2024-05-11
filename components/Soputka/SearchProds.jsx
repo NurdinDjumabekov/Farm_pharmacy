@@ -1,32 +1,25 @@
 import React, { useCallback, useRef } from "react";
-import { StyleSheet, Image, View } from "react-native";
+import { StyleSheet, Image, View, Text } from "react-native";
 import { TextInput, TouchableOpacity } from "react-native";
+import { changeSearchProd } from "../../store/reducers/stateSlice";
 import {
-  changeActiveSelectCategory,
-  changeSearchProd,
-} from "../../store/reducers/stateSlice";
-import { getLocalDataUser } from "../../helpers/returnDataUser";
-import { changeLocalData } from "../../store/reducers/saveDataSlice";
-import { searchProdTT } from "../../store/reducers/requestSlice";
+  clearListProductTT,
+  searchProdTT,
+} from "../../store/reducers/requestSlice";
 import { useDispatch, useSelector } from "react-redux";
 import searchIcon from "../../assets/icons/searchIcon.png";
 import { debounce } from "lodash";
 
-export const SearchProds = ({ navigation, getData }) => {
-  const refInput = useRef();
-
+export const SearchProds = ({ disable, navigation, guid, refInput }) => {
   const dispatch = useDispatch();
 
   const { searchProd } = useSelector((state) => state.stateSlice);
 
-  const { data } = useSelector((state) => state.saveDataSlice);
-
   const searchData = useCallback(
     debounce((text) => {
-      dispatch(changeActiveSelectCategory("0")); // Установка активной категории
-      getLocalDataUser({ changeLocalData, dispatch }); // Получение локальных данных пользователя
-      const sendData = { searchProd: text, seller_guid: data?.seller_guid }; // Подготовка данных для поиска
-      dispatch(searchProdTT({ ...sendData, checkComponent: false })); // Выполнение поиска с заданными параметрами
+      if (text?.length > 1) {
+        dispatch(searchProdTT(text)); // Выполнение поиска с заданными параметрами
+      }
     }, 800),
     []
   );
@@ -35,9 +28,26 @@ export const SearchProds = ({ navigation, getData }) => {
     dispatch(changeSearchProd(text));
     searchData(text);
     if (text === "") {
-      getData();
+      dispatch(clearListProductTT());
     }
   };
+
+  const clickSearch = () => {
+    if (disable) {
+      navigation.navigate("SearchScreen", { guid });
+    }
+  };
+
+  if (disable) {
+    return (
+      <TouchableOpacity style={styles.blockSearch} onPress={clickSearch}>
+        <Text style={styles.textSearch}>Поиск...</Text>
+        <TouchableOpacity onPress={clickSearch}>
+          <Image style={styles.iconSearch} source={searchIcon} />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
+  }
 
   return (
     <View style={styles.blockSearch}>
@@ -45,7 +55,7 @@ export const SearchProds = ({ navigation, getData }) => {
         ref={refInput}
         style={styles.inputSearch}
         placeholderTextColor={"#222"}
-        placeholder="Поиск товаров ..."
+        placeholder="Поиск..."
         onChangeText={onChange}
         value={searchProd}
       />
@@ -57,12 +67,24 @@ export const SearchProds = ({ navigation, getData }) => {
 };
 
 const styles = StyleSheet.create({
+  textSearch: {
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    fontSize: 17,
+    fontWeight: "400",
+    color: "#000",
+    width: "100%",
+  },
+
+  ///////////////////////////////
   blockSearch: {
     height: 50,
     width: "85%",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
   },
 
   inputSearch: {
@@ -76,7 +98,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   iconSearch: {
-    width: 25,
-    height: 25,
+    width: 22,
+    height: 22,
   },
 });

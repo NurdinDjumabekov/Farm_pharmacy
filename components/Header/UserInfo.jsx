@@ -1,5 +1,5 @@
 import { StyleSheet, Image, View } from "react-native";
-import userImg from "../../assets/icons/user.png";
+import userImg from "../../assets/icons/user1.png";
 import { Text } from "react-native";
 import { getLocalDataUser } from "../../helpers/returnDataUser";
 import { useEffect } from "react";
@@ -19,7 +19,7 @@ const UserInfo = () => {
     <View style={styles.parentBlock}>
       <Image style={styles.user} source={userImg} />
       <View>
-        <Text style={styles.userRole}>Продавец</Text>
+        <Text style={styles.userRole}>Фармацевт</Text>
         <Text style={styles.userName}>{data?.seller_fio}</Text>
       </View>
     </View>
@@ -36,8 +36,8 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   user: {
-    width: 35,
-    height: 35,
+    width: 32,
+    height: 32,
   },
   userRole: {
     fontSize: 12,

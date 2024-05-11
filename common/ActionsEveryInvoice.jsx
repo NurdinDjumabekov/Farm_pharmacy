@@ -15,15 +15,13 @@ import {
 
 export const ActionsEveryInvoice = ({ getData, checkComponent }) => {
   const dispatch = useDispatch();
-
+  ///delete
 
   const { listCategory } = useSelector((state) => state.requestSlice);
 
   const { activeSelectCategory } = useSelector((state) => state.stateSlice);
 
   const { data } = useSelector((state) => state.saveDataSlice);
-
-
 
   const handleValueChange = (value) => {
     if (value !== activeSelectCategory) {

@@ -11,8 +11,15 @@ const initialState = {
     products: [],
   }, // для подтверждения и принятия товаров ТА
 
-  temporaryData: {}, ///// временные данные(после добавления сюда, они добавляются в список(listProductForTT))
+  temporaryData: {
+    product_name: "",
+    guid: "",
+    product_price: "",
+    ves: "",
+  }, ///// временные данные(для добавления товаров в список)
+
   dataInputsInv: { price: "", ves: "" },
+
   listProductForTT: [],
   stateForCategory: {}, // состояние для хранения временной категории(подсветка категории)
 
@@ -64,6 +71,15 @@ const stateSlice = createSlice({
 
     changeTemporaryData: (state, action) => {
       state.temporaryData = action.payload;
+    },
+
+    clearTemporaryData: (state, action) => {
+      state.temporaryData = {
+        product_name: "",
+        guid: "",
+        product_price: "",
+        ves: "",
+      };
     },
 
     changeListProductForTT: (state, action) => {
@@ -133,6 +149,7 @@ export const {
   changeAcceptInvoiceTT,
   clearAcceptInvoiceTT,
   changeTemporaryData,
+  clearTemporaryData,
   changeListProductForTT,
   addListProductForTT,
   removeListProductForTT,

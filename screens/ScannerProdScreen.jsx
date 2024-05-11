@@ -3,11 +3,13 @@ import { Text, View, StyleSheet, Vibration } from "react-native";
 import { Camera } from "expo-camera";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import BarcodeMask from "react-native-barcode-mask";
-import { checkQrCodeDoctor } from "../store/reducers/requestSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { addProdQrCode } from "../store/reducers/requestSlice";
 
-export const ScannerScreen = ({ navigation }) => {
+export const ScannerProdScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
+
+  const { guid } = route.params; /// guid накладной
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
   //// разрешение для камеры
@@ -23,14 +25,13 @@ export const ScannerScreen = ({ navigation }) => {
     })();
   }, []);
 
-  const seller_guid = data?.seller_guid;
-
   const showResultModal = async ({ data }) => {
+    const { seller_guid } = data;
     if (data && !scanned) {
       setScanned(true);
-      dispatch(checkQrCodeDoctor({ data, navigation, seller_guid }));
-      // Вызов вибрации при обнаружении QR-кода
+      dispatch(addProdQrCode({ data, navigation, seller_guid, guid }));
       Vibration.vibrate(); // Простая вибрация
+      // Вызов вибрации при обнаружении QR-кода
     }
   };
 
@@ -90,4 +91,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ScannerScreen;
+export default ScannerProdScreen;

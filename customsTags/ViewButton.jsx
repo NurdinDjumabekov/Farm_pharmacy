@@ -1,9 +1,7 @@
 import { TouchableWithoutFeedback } from "react-native";
-import { TouchableOpacity } from "react-native";
 import { Text } from "react-native";
 
 export const ViewButton = ({ children, styles, onclick }) => {
-  // console.log(styles, "styles");
   return (
     <TouchableWithoutFeedback onPress={onclick}>
       <Text
@@ -18,9 +16,6 @@ export const ViewButton = ({ children, styles, onclick }) => {
             fontSize: 20,
             backgroundColor: styles?.backgroundColor || "#000",
             fontWeight: 700,
-            // marginHorizontal: 80,
-            // minWidth: "100%",
-            // width: 250,
           },
           styles,
         ]}

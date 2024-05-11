@@ -13,12 +13,13 @@ import {
   getHistorySoputka,
   getListAgents,
 } from "../store/reducers/requestSlice";
-import { ModalCreateSoputka } from "../components/Soputka/ModalCreateSoputka";
 import { formatCount } from "../helpers/amounts";
+import { ModalCreateSoputka } from "../components/Soputka/ModalCreateSoputka";
 
 export const SoputkaScreen = ({ navigation }) => {
   //// Сопутка
   const dispatch = useDispatch();
+
   const [modalState, setModalState] = useState(false);
 
   const { data } = useSelector((state) => state.saveDataSlice);
@@ -47,15 +48,19 @@ export const SoputkaScreen = ({ navigation }) => {
     navigation.navigate("SoputkaProdHistoryScreen", { guidInvoice });
   };
 
+  const openScaner = () => navigation.navigate("ScannerScreen");
+
+  const openListDoctors = () => setModalState(true);
+
   return (
     <>
       <SafeAreaView style={styles.container}>
         <View style={styles.soputkaBlock}>
-          <ViewButton
-            styles={styles.soputka}
-            onclick={() => setModalState(true)}
-          >
-            + Продать товар
+          <ViewButton styles={styles.soputka} onclick={openScaner}>
+            Отсканировать QR код врача
+          </ViewButton>
+          <ViewButton styles={styles.soputka} onclick={openListDoctors}>
+            Выбрать врача в ручную
           </ViewButton>
         </View>
         <View style={styles.selectBlock}>
@@ -165,19 +170,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     minWidth: "100%",
+    gap: 10,
   },
 
   soputka: {
-    fontSize: 18,
+    fontSize: 14,
     color: "#fff",
-    minWidth: "95%",
-    paddingTop: 15,
-    paddingBottom: 15,
+    width: 170,
+    paddingTop: 10,
+    paddingBottom: 10,
     borderRadius: 8,
-    fontWeight: 600,
+    paddingHorizontal: 10,
+    fontWeight: "700",
     backgroundColor: "rgba(97 ,100, 239,0.7)",
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 12,
+    marginBottom: 12,
   },
 
   everyProd: {

@@ -13,11 +13,12 @@ import { getLocalDataUser } from "../helpers/returnDataUser";
 import { changeLocalData } from "../store/reducers/saveDataSlice";
 import { Preloader } from "../components/Preloader";
 import { HistoryBalance } from "./HistoryBalance";
-import { ScannerScreen } from "./ScannerScreen";
 import { AddProdSoputkaSrceen } from "./AddProdSoputkaSrceen";
 import { SoputkaScreen } from "./SoputkaScreen";
-import { SoputkaProductScreen } from "./SoputkaProductScreen";
 import { SoputkaProdHistoryScreen } from "./SoputkaProdHistoryScreen";
+import ScannerScreen from "./ScannerScreen";
+import ScannerProdScreen from "./ScannerProdScreen";
+import { SearchScreen } from "./SearchScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -61,6 +62,15 @@ export const Navigation = () => {
               name="ScannerScreen"
               component={ScannerScreen}
               options={{ title: "Сканер" }}
+              ////// сканер для докторов
+            />
+
+            {/* /////////////////////// cameraQRCode for prod ///////////////////////*/}
+            <Stack.Screen
+              name="ScannerProdScreen"
+              component={ScannerProdScreen}
+              options={{ title: "Сканер для продажи товаров" }}
+              ////// сканер для продажи товаров
             />
 
             {/* /////////////////////// HistoryBalance ///////////////////////*/}
@@ -76,21 +86,27 @@ export const Navigation = () => {
               component={SoputkaScreen}
               options={{ title: "Проданные товары и бонусы" }}
             />
+
             <Stack.Screen
               name="AddProdSoputkaSrceen"
               component={AddProdSoputkaSrceen}
               options={{ title: "" }}
-            />
-            <Stack.Screen
-              name="SoputkaProductScreen"
-              component={SoputkaProductScreen}
-              options={{ title: "Сопутствующие товары" }}
+              ///// страница продаж
             />
 
             <Stack.Screen
               name="SoputkaProdHistoryScreen"
               component={SoputkaProdHistoryScreen}
+              ///// детальный просмотр каждой истории продаж
             />
+            {/* /////////////////////// SearchScreen ///////////////////////*/}
+
+            <Stack.Screen
+              name="SearchScreen"
+              component={SearchScreen}
+              options={{ title: "" }}
+            />
+
             {/* /////////////////////// Бонусы ///////////////////////*/}
             <Stack.Screen
               name="Leftovers"

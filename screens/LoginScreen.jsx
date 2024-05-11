@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { changeDataLogin, clearLogin } from "../store/reducers/stateSlice";
 import { ViewInput } from "../customsTags/ViewInput";
@@ -6,6 +6,8 @@ import { ViewContainer } from "../customsTags/ViewContainer";
 import { ViewButton } from "../customsTags/ViewButton";
 import { logInAccount } from "../store/reducers/requestSlice";
 import { useEffect } from "react";
+/////imgs
+import logo from "../assets/icons/logo.png";
 
 export const LoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -35,21 +37,23 @@ export const LoginScreen = ({ navigation }) => {
   return (
     <View styles={{ position: "relative" }}>
       <ViewContainer>
-        <View>
-          <ViewInput
-            text="Введите логин"
-            value={dataLogin?.login}
-            onChangeText={onChangeLogin}
-            placeholder="Ваш логин"
-          />
-          <ViewInput
-            text="Введите пароль"
-            value={dataLogin?.password}
-            onChangeText={onChangePassword}
-            placeholder="Ваш пароль"
-            typePassword={true}
-          />
-        </View>
+        {/* <View style={styles.logoBlock}>
+          <Image source={logo} style={styles.logoImg} />
+          <Text style={styles.logoText}>Farm</Text>
+        </View> */}
+        <ViewInput
+          text="Введите логин"
+          value={dataLogin?.login}
+          onChangeText={onChangeLogin}
+          placeholder="Ваш логин"
+        />
+        <ViewInput
+          text="Введите пароль"
+          value={dataLogin?.password}
+          onChangeText={onChangePassword}
+          placeholder="Ваш пароль"
+          typePassword={true}
+        />
       </ViewContainer>
       <ViewButton onclick={sendLogin} styles={styles.loginBtn}>
         Войти
@@ -60,14 +64,38 @@ export const LoginScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   loginBtn: {
-    backgroundColor: "rgba(47, 71, 190, 0.591)",
+    backgroundColor: "#009900",
     position: "absolute",
     bottom: 30,
     left: 10,
     right: 10,
     minWidth: "90%",
-    // elevation: 2,
     color: "#fff",
     marginTop: 0,
+  },
+  logoImg: {
+    width: 70,
+    height: 70,
+    borderRadius: 8,
+  },
+
+  logoBlock: {
+    minWidth: "100%",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 20,
+    // fontFamily: "Inter, sans-serif",
+  },
+
+  logoText: {
+    fontSize: 45,
+    fontWeight: "700",
+    color: "#009900",
+    lineHeight: 52,
   },
 });

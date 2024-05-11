@@ -65,7 +65,7 @@ export const SoputkaProdHistoryScreen = ({ navigation, route }) => {
 
   const listData = listProdSoputka?.[0]?.list;
 
-  console.log(listData, "listProdSoputka");
+  console.log(listProdSoputka, "listProdSoputka");
 
   return (
     <>
@@ -76,12 +76,12 @@ export const SoputkaProdHistoryScreen = ({ navigation, route }) => {
             <RefreshControl refreshing={preloader} onRefresh={getData} />
           }
         >
-          {listData?.map((item) => (
+          {listData?.map((item, index) => (
             <>
               <View style={styles.EveryInner}>
                 <View style={styles.mainData}>
                   <View style={styles.mainDataInner}>
-                    <Text style={styles.titleNum}>{item.codeid}</Text>
+                    <Text style={styles.titleNum}>{index + 1}</Text>
                     <View>
                       <Text style={styles.date}>{item.date} </Text>
                       <Text style={styles.sum}>
@@ -139,7 +139,8 @@ export const SoputkaProdHistoryScreen = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
+    paddingBottom: 50,
   },
 
   historyParent: {
@@ -148,7 +149,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     borderTopWidth: 1,
     borderColor: "rgba(47, 71, 190, 0.587)",
-    maxHeight: "90%",
+    minHeight: "80%",
+    flex: 1,
   },
 
   EveryInner: {

@@ -3,105 +3,92 @@ import { TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { ViewButton } from "../../customsTags/ViewButton";
 import {
-  changeDataInputsInv,
   changeTemporaryData,
+  clearTemporaryData,
 } from "../../store/reducers/stateSlice";
 import {
   addProductSoputkaTT,
-  getCategoryTT,
+  getListSoputkaProd,
 } from "../../store/reducers/requestSlice";
-import { getLocalDataUser } from "../../helpers/returnDataUser";
-import { changeLocalData } from "../../store/reducers/saveDataSlice";
 import { Modal } from "react-native";
 import { Text } from "react-native";
 import { TouchableWithoutFeedback } from "react-native";
 
-export const AddProducts = (props) => {
-  const { productGuid, checkComponent, forAddTovar, isCheck, obj } = props;
-
+export const AddProducts = ({ guid }) => {
+  ////guid созданной накладной
   //// для добавления продуктов в список
-  ///  checkComponent - true значит сопутка false - продажа
   const dispatch = useDispatch();
-  const { data } = useSelector((state) => state.saveDataSlice);
 
-  const { dataInputsInv } = useSelector((state) => state.stateSlice);
-  const { infoKassa } = useSelector((state) => state.requestSlice);
+  const { temporaryData } = useSelector((state) => state.stateSlice);
 
   const onChange = (name, text) => {
     if (/^\d*\.?\d*$/.test(text)) {
-      dispatch(changeDataInputsInv({ ...dataInputsInv, [name]: text }));
+      dispatch(changeTemporaryData({ ...temporaryData, [name]: text }));
     }
   };
 
   const addInInvoice = () => {
     if (
-      dataInputsInv?.price === "" ||
-      dataInputsInv?.ves === "" ||
-      dataInputsInv?.price == 0 ||
-      dataInputsInv?.ves == 0
+      temporaryData?.product_price === "" ||
+      temporaryData?.ves === "" ||
+      temporaryData?.product_price == 0 ||
+      temporaryData?.ves == 0
     ) {
       Alert.alert("Введите цену и вес (кол-во)!");
     } else {
       const data = {
-        invoice_guid: forAddTovar?.guid,
-        count: dataInputsInv?.ves,
-        price: dataInputsInv?.price,
-        guid: productGuid,
+        invoice_guid: guid,
+        count: temporaryData?.ves,
+        price: temporaryData?.product_price,
+        guid: temporaryData?.guid,
       };
       dispatch(addProductSoputkaTT({ data, getData }));
-
-      console.log(productGuid, "productGuid");
-      console.log(forAddTovar?.guid, "invoice_guid");
     }
   };
 
   const getData = async () => {
-    await getLocalDataUser({ changeLocalData, dispatch });
-    const dataObj = {
-      checkComponent,
-      seller_guid: data?.seller_guid,
-      type: "sale&&soputka",
-    };
-    await dispatch(getCategoryTT(dataObj));
-  }; /// для вызова категорий и продуктов
+    dispatch(getListSoputkaProd(guid));
+  }; /// для отображения всех проданных товаров
 
-  const onClose = () => dispatch(changeTemporaryData({}));
+  const onClose = () => dispatch(clearTemporaryData());
 
   return (
     <Modal
       animationType="fade"
       transparent={true}
-      visible={isCheck}
+      visible={!!temporaryData?.guid}
       onRequestClose={onClose}
     >
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.parennt}>
+        <View style={styles.parent}>
           <View style={styles.child}>
-            <Text style={styles.title}>{obj?.product_name}</Text>
+            <Text style={styles.title}>{temporaryData?.product_name}</Text>
             <TouchableOpacity style={styles.krest} onPress={() => onClose()}>
               <View style={[styles.line, styles.deg]} />
               <View style={[styles.line, styles.degMinus]} />
             </TouchableOpacity>
-            {checkComponent && isCheck && (
-              <Text style={styles.leftovers}>Остаток: {obj.end_outcome}</Text>
-            )}
             <View style={styles.addDataBlock}>
-              <TextInput
-                style={styles.input}
-                value={`${dataInputsInv?.price?.toString()} сомони`}
-                onChangeText={(text) => onChange("price", text)}
-                keyboardType="numeric"
-                placeholder="Цена"
-                maxLength={15}
-              />
-              <TextInput
-                style={styles.input}
-                value={dataInputsInv?.ves}
-                onChangeText={(text) => onChange("ves", text)}
-                keyboardType="numeric"
-                placeholder="Вес (кол-во)"
-                maxLength={8}
-              />
+              <View style={styles.blockInput}>
+                <Text style={styles.titleInner}>Цена (сомони)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={temporaryData?.product_price?.toString()}
+                  onChangeText={(text) => onChange("product_price", text)}
+                  keyboardType="numeric"
+                  placeholder="Цена"
+                  maxLength={15}
+                />
+              </View>
+              <View style={styles.blockInput}>
+                <Text style={styles.titleInner}>Вес (кол-во, шт)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={temporaryData?.ves?.toString()}
+                  onChangeText={(text) => onChange("ves", text)}
+                  keyboardType="numeric"
+                  maxLength={8}
+                />
+              </View>
             </View>
             <ViewButton styles={styles.btnAdd} onclick={addInInvoice}>
               Добавить
@@ -114,11 +101,12 @@ export const AddProducts = (props) => {
 };
 
 const styles = StyleSheet.create({
-  parennt: {
+  parent: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
+    width: "",
   },
 
   leftovers: {
@@ -130,11 +118,12 @@ const styles = StyleSheet.create({
 
   child: {
     padding: 15,
-    paddingVertical: 10,
+    paddingTop: 20,
     paddingBottom: 25,
     borderRadius: 5,
     backgroundColor: "#ebeef2",
     position: "relative",
+    width: "90%",
   },
 
   title: {
@@ -144,8 +133,15 @@ const styles = StyleSheet.create({
     maxWidth: "85%",
   },
 
+  titleInner: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginBottom: 5,
+    paddingLeft: 2,
+  },
+
   addDataBlock: {
-    width: "95%",
+    width: "100%",
     alignSelf: "center",
     display: "flex",
     flexDirection: "row",
@@ -154,11 +150,15 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 
+  blockInput: {
+    width: "48%",
+  },
+
   input: {
     paddingLeft: 10,
     paddingRight: 10,
     height: 40,
-    width: "48%",
+    minWidth: "100%",
     borderRadius: 5,
     borderColor: "rgb(217 223 232)",
     borderRadius: 8,
@@ -175,7 +175,8 @@ const styles = StyleSheet.create({
     borderColor: "rgb(217 223 232)",
     fontSize: 18,
     marginTop: 10,
-    backgroundColor: "rgba(97 ,100, 239,0.7)",
+    // backgroundColor: "rgba(97 ,100, 239,0.7)",
+    backgroundColor: "rgba(12, 169, 70, 0.886)",
   },
 
   //////////////////// krestik
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
     position: "absolute",
     right: 0,
-    top: 10,
+    top: 18,
   },
 
   line: {

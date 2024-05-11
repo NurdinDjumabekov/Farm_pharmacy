@@ -37,7 +37,7 @@ export const MainScreen = ({ navigation }) => {
     <ViewContainer>
       <SafeAreaView>
         <View style={styles.parentBlock}>
-          <TouchableOpacity style={styles.balance} onPress={goPage}>
+          {/* <TouchableOpacity style={styles.balance} onPress={goPage}>
             <View>
               <View style={styles.balanceInner}>
                 <Text style={styles.balanceText}>Бонусы</Text>
@@ -46,7 +46,7 @@ export const MainScreen = ({ navigation }) => {
               <Text style={styles.balanceNum}>{balance || 0} сомони</Text>
             </View>
             <Text style={styles.balanceHistory}>История</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <FlatList
             contentContainerStyle={styles.flatList}
             data={dataCategory}
@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     paddingBottom: 10,
+    marginTop: 20,
   },
 
   balance: {
