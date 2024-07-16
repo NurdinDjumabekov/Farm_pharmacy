@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
+
+////// tags
 import { StyleSheet, Text } from "react-native";
 import { View, TouchableOpacity, RefreshControl } from "react-native";
+
+////// hooks
 import { useDispatch, useSelector } from "react-redux";
-import {
-  confirmSoputka,
-  deleteSoputkaProd,
-  getListSoputkaProd,
-} from "../../store/reducers/requestSlice";
+
+////// fns
+import { confirmSoputka } from "../../store/reducers/requestSlice";
+import { deleteSoputkaProd } from "../../store/reducers/requestSlice";
+import { getListSoputkaProd } from "../../store/reducers/requestSlice";
+
+////// components
 import ConfirmationModal from "../../common/ConfirmationModal";
 import { ViewButton } from "../../customsTags/ViewButton";
 
@@ -22,13 +28,11 @@ export const ListSoldProduct = ({ guidInvoice, navigation }) => {
 
   const list = listProdSoputka?.[0]?.list;
 
+  const getData = () => dispatch(getListSoputkaProd(guidInvoice));
+
   useEffect(() => {
     getData();
   }, [guidInvoice]);
-
-  const getData = () => {
-    dispatch(getListSoputkaProd(guidInvoice));
-  };
 
   const del = (product_guid) => {
     dispatch(deleteSoputkaProd({ product_guid, getData }));

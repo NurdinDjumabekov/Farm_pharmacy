@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Vibration } from "react-native";
+import { checkQrCodeDoctor } from "../store/reducers/requestSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { Camera } from "expo-camera";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import BarcodeMask from "react-native-barcode-mask";
-import { checkQrCodeDoctor } from "../store/reducers/requestSlice";
-import { useDispatch, useSelector } from "react-redux";
 
-export const ScannerScreen = ({ navigation }) => {
+const ScannerScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-  //// разрешение для камеры
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
 
@@ -29,17 +27,15 @@ export const ScannerScreen = ({ navigation }) => {
     if (data && !scanned) {
       setScanned(true);
       dispatch(checkQrCodeDoctor({ data, navigation, seller_guid }));
-      // Вызов вибрации при обнаружении QR-кода
-      Vibration.vibrate(); // Простая вибрация
+      Vibration.vibrate();
     }
   };
 
-  if (!permission) {
-    /// Разрешения камеры все еще загружаются
+  if (hasPermission === null) {
     return <View />;
   }
 
-  if (!permission.granted || hasPermission === null) {
+  if (hasPermission === false) {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: "center" }}>
@@ -51,12 +47,11 @@ export const ScannerScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Camera
+      <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : showResultModal}
         style={StyleSheet.absoluteFillObject}
       >
         <BarcodeMask
-          type={BarCodeScanner.Constants.BarCodeType.qr}
           edgeColor={"rgba(12, 169, 70, 0.9)"}
           edgeRadius={10}
           width={280}
@@ -69,7 +64,7 @@ export const ScannerScreen = ({ navigation }) => {
           useNativeDriver={false}
           edgeBorderWidth={5}
         />
-      </Camera>
+      </BarCodeScanner>
     </View>
   );
 };

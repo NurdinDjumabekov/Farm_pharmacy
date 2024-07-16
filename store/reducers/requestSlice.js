@@ -129,7 +129,7 @@ export const checkQrCodeDoctor = createAsyncThunk(
 export const addProdQrCode = createAsyncThunk(
   "addProdQrCode",
   async function (props, { dispatch, rejectWithValue }) {
-    const { data, navigation, seller_guid, guid } = props;
+    const { data, navigation, guid } = props;
     try {
       const response = await axios({
         method: "GET",
@@ -138,13 +138,14 @@ export const addProdQrCode = createAsyncThunk(
       if (response.status >= 200 && response.status < 300) {
         const { product } = response?.data;
         const forAddTovar = { guid };
+
         if (product?.length === 0) {
           Alert.alert(text_none_qr_code_prod);
-          await navigation.navigate("AddProdSoputkaSrceen", { forAddTovar });
+          navigation.navigate("AddProdSoputkaSrceen", { forAddTovar });
         } else {
-          dispatch(changeTemporaryData({ ...product?.[0], ves: "1" }));
-          await navigation.navigate("AddProdSoputkaSrceen", { forAddTovar });
-          // Alert.alert(`Товар: ${product?.[0]?.product_name}`);
+          const obj = product?.[0];
+          navigation.navigate("EverySaleProdScreen", { obj, guid });
+          Alert.alert(`Товар: ${product?.[0]?.product_name}`);
         }
       } else {
         throw Error(`Error: ${response.status}`);
@@ -218,7 +219,6 @@ export const createInvoiceSoputkaTT = createAsyncThunk(
         navigation?.navigate("AddProdSoputkaSrceen", {
           forAddTovar: response?.data,
         });
-        console.log(response?.data, "response?.data");
         return response?.data;
       } else {
         throw Error(`Error: ${response.status}`);
@@ -337,8 +337,7 @@ export const addProductSoputkaTT = createAsyncThunk(
   /// добавление продукта(по одному) в накладную в сопуттку накладной
   "addProductSoputkaTT",
   async function (props, { dispatch, rejectWithValue }) {
-    const { data, getData } = props;
-    console.log(data, "data");
+    const { data, navigation, getData } = props;
     try {
       const response = await axios({
         method: "POST",
@@ -346,12 +345,15 @@ export const addProductSoputkaTT = createAsyncThunk(
         data,
       });
       if (response.status >= 200 && response.status < 300) {
-        if (+response?.data?.result === 1) {
-          dispatch(changeTemporaryData({})); // очищаю активный продукт
+        if (response?.data?.result == 1) {
+          const forAddTovar = { guid: data?.invoice_guid };
+          navigation?.navigate("AddProdSoputkaSrceen", { forAddTovar });
+
           setTimeout(() => {
             getData();
-          }, 500);
+          }, 400);
         }
+        return response?.data?.result;
       } else {
         throw Error(`Error: ${response.status}`);
       }
@@ -372,6 +374,7 @@ export const getListSoputkaProd = createAsyncThunk(
         url: `${API}/farm/get_point_invoice_product?invoice_guid=${guidInvoice}`,
       });
       if (response.status >= 200 && response.status < 300) {
+        console.log(response?.data, "getListSoputkaProd", guidInvoice);
         return response?.data;
       } else {
         throw Error(`Error: ${response.status}`);
@@ -412,7 +415,6 @@ export const confirmSoputka = createAsyncThunk(
   /// подверждение товаров сопутки
   "confirmSoputka",
   async function ({ sendData, navigation }, { dispatch, rejectWithValue }) {
-    console.log(sendData, "sendData");
     try {
       const response = await axios({
         method: "POST",
@@ -420,8 +422,9 @@ export const confirmSoputka = createAsyncThunk(
         data: sendData,
       });
       if (response.status >= 200 && response.status < 300) {
-        if (+response?.data?.result === 1) {
+        if (response?.data?.result == 1) {
           navigation.navigate("Main");
+          Alert.alert("Успешно продано");
         }
       } else {
         throw Error(`Error: ${response.status}`);
@@ -433,6 +436,51 @@ export const confirmSoputka = createAsyncThunk(
 );
 
 /////////////////////////////// sale ////////////////////////////////
+
+/// getEveryProd
+export const getEveryProd = createAsyncThunk(
+  /// получаю каждый продукт по qrcode или guid для продажи
+  "getEveryProd",
+  async function (props, { dispatch, rejectWithValue }) {
+    const { guid, seller_guid, qrcode, navigation } = props;
+    const { invoice_guid, closeModal } = props;
+
+    const urlGuid = !!guid ? `&product_guid=${guid}` : "";
+    const qrcodeGuid = !!qrcode ? `&qrcode=${qrcode}` : "";
+
+    const url = `${API}/farm/get_product_detail?seller_guid=${seller_guid}${urlGuid}${qrcodeGuid}`;
+
+    try {
+      const response = await axios(url);
+      if (response.status >= 200 && response.status < 300) {
+        if (response?.data?.length === 0) {
+          Alert.alert("Не удалось найти такой продукт");
+        } else {
+          const data = response?.data?.[0];
+
+          const obj = { guid: data?.guid, product_name: data?.product_name };
+
+          if (!!qrcode) {
+            await navigation.navigate("SalePointScreen");
+            await navigation.navigate("EverySaleProdScreen", {
+              obj,
+              guid: invoice_guid,
+            });
+            /// guid - guid товара
+            ///// закрываю модалку для ввода ручного qr кода
+            closeModal();
+          }
+        }
+
+        return response?.data?.[0];
+      } else {
+        throw Error(`Error: ${response.status}`);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 /////////////////////////////// Leftovers ////////////////////////////////
 
@@ -674,6 +722,20 @@ const requestSlice = createSlice({
       // state.preloader = true;
     });
 
+    ////////getEveryProd
+    builder.addCase(getEveryProd.fulfilled, (state, action) => {
+      state.preloader = false;
+      state.everyProdSale = action.payload;
+    });
+    builder.addCase(getEveryProd.rejected, (state, action) => {
+      state.error = action.payload;
+      state.preloader = false;
+      state.everyProdSale = {};
+    });
+    builder.addCase(getEveryProd.pending, (state, action) => {
+      state.preloader = true;
+    });
+
     //////// getMyLeftovers
     builder.addCase(getMyLeftovers.fulfilled, (state, action) => {
       state.preloader = false;
@@ -739,6 +801,9 @@ const requestSlice = createSlice({
     ////////////////addProductSoputkaTT
     builder.addCase(addProductSoputkaTT.fulfilled, (state, action) => {
       state.preloader = false;
+      if (action.payload == 1) {
+        Alert.alert("Товар добавлен в список");
+      }
     });
     builder.addCase(addProductSoputkaTT.rejected, (state, action) => {
       state.error = action.payload;

@@ -6,19 +6,23 @@ import { MainScreen } from "./MainScreen";
 import { useDispatch, useSelector } from "react-redux";
 import { StatusBar } from "expo-status-bar";
 import { LogOut } from "../components/Header/LogOut";
-import { LeftoversScreen } from "./LeftoversScreen";
-import { PayMoneyScreen } from "./PayMoneyScreen";
 import UserInfo from "../components/Header/UserInfo";
 import { getLocalDataUser } from "../helpers/returnDataUser";
 import { changeLocalData } from "../store/reducers/saveDataSlice";
 import { Preloader } from "../components/Preloader";
-import { HistoryBalance } from "./HistoryBalance";
 import { AddProdSoputkaSrceen } from "./AddProdSoputkaSrceen";
 import { SoputkaScreen } from "./SoputkaScreen";
 import { SoputkaProdHistoryScreen } from "./SoputkaProdHistoryScreen";
+import { SearchScreen } from "./SearchScreen";
 import ScannerScreen from "./ScannerScreen";
 import ScannerProdScreen from "./ScannerProdScreen";
-import { SearchScreen } from "./SearchScreen";
+
+/////// delete
+import { LeftoversScreen } from "./LeftoversScreen";
+import { PayMoneyScreen } from "./PayMoneyScreen";
+import { HistoryBalance } from "./HistoryBalance";
+import ChoiceDoctorScreen from "./ChoiceDoctorScreen/ChoiceDoctorScreen";
+import EverySaleProdScreen from "./SaleScreen/EverySaleProdScreen/EverySaleProdScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -73,25 +77,24 @@ export const Navigation = () => {
               ////// сканер для продажи товаров
             />
 
-            {/* /////////////////////// HistoryBalance ///////////////////////*/}
-            <Stack.Screen
-              name="HistoryBalance"
-              component={HistoryBalance}
-              options={{ title: "История" }}
-            />
-
             {/* /////////////////////// Сопутка ///////////////////////*/}
             <Stack.Screen
               name="Soputka"
               component={SoputkaScreen}
-              options={{ title: "Проданные товары и бонусы" }}
+              options={{ title: "Проданные товары" }}
             />
 
             <Stack.Screen
               name="AddProdSoputkaSrceen"
               component={AddProdSoputkaSrceen}
-              options={{ title: "" }}
+              options={{ title: "Выбор товара" }}
               ///// страница продаж
+            />
+
+            <Stack.Screen
+              name="EverySaleProdScreen"
+              component={EverySaleProdScreen}
+              options={{ title: "Назад" }} ////// страница продажи каждого товара
             />
 
             <Stack.Screen
@@ -99,26 +102,18 @@ export const Navigation = () => {
               component={SoputkaProdHistoryScreen}
               ///// детальный просмотр каждой истории продаж
             />
-            {/* /////////////////////// SearchScreen ///////////////////////*/}
 
+            {/* /////////////////////// SearchScreen ///////////////////////*/}
             <Stack.Screen
               name="SearchScreen"
               component={SearchScreen}
               options={{ title: "" }}
             />
 
-            {/* /////////////////////// Бонусы ///////////////////////*/}
             <Stack.Screen
-              name="Leftovers"
-              component={LeftoversScreen}
-              options={{ title: "Проданные товары и бонусы " }}
-            />
-
-            {/* /////////////////////// 0плата ТТ /////////////////////// */}
-            <Stack.Screen
-              name="PayMoney"
-              component={PayMoneyScreen}
-              options={{ title: "Оплата" }}
+              name="ChoiceDoctorScreen"
+              component={ChoiceDoctorScreen}
+              options={{ title: "Выбор врача" }}
             />
           </>
         )}

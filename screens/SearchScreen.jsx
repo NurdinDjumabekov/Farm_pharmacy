@@ -1,14 +1,17 @@
+//////// hooks
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { StyleSheet } from "react-native";
+
+//////// tags
+import { ScrollView, StyleSheet } from "react-native";
+
+//////// fns
 import { clearListProductTT } from "../store/reducers/requestSlice";
-import {
-  changeSearchProd,
-  changeTemporaryData,
-} from "../store/reducers/stateSlice";
+import { changeSearchProd } from "../store/reducers/stateSlice";
+
+//////// components
 import { SearchProds } from "../components/Soputka/SearchProds";
-import { AddProducts } from "../components/Soputka/AddProducts";
+import { EveryProduct } from "../components/SaleProd/EveryProduct/EveryProduct";
 
 export const SearchScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
@@ -16,19 +19,11 @@ export const SearchScreen = ({ navigation, route }) => {
 
   const { listProductTT } = useSelector((state) => state.requestSlice);
 
-  console.log(listProductTT, "listProductTT");
   const refInput = useRef(null);
 
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <SearchProds
-          disable={false}
-          navigation={navigation}
-          guid={guid}
-          refInput={refInput}
-        />
-      ),
+      headerRight: () => <SearchProds refInput={refInput} />,
     });
 
     setTimeout(() => {
@@ -42,28 +37,17 @@ export const SearchScreen = ({ navigation, route }) => {
     //// очищаю список категорий и товаров
   }, []);
 
-  const clickProd = (obj) => {
-    dispatch(changeTemporaryData({ ...obj, ves: "1" }));
-  };
-
   return (
-    <>
-      <ScrollView style={styles.parentBlock}>
-        {listProductTT?.map((item, index) => (
-          <TouchableOpacity
-            style={styles.container}
-            onPress={() => clickProd(item)}
-          >
-            <Text style={styles.name} numberOfLines={2} ellipsizeMode="tail">
-              {index + 1}. {item?.product_name}
-            </Text>
-            <View style={styles.arrow}></View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-      <AddProducts guid={guid} />
-      {/* ///// модалка для добавления товаров */}
-    </>
+    <ScrollView style={styles.parentBlock}>
+      {listProductTT?.map((item, index) => (
+        <EveryProduct
+          obj={item}
+          index={index}
+          navigation={navigation}
+          guid={guid}
+        />
+      ))}
+    </ScrollView>
   );
 };
 
@@ -72,7 +56,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     position: "relative",
-    paddingVertical: 10,
   },
 
   container: {

@@ -46,7 +46,7 @@ export const AddProducts = ({ guid }) => {
     }
   };
 
-  const getData = async () => {
+  const getData = () => {
     dispatch(getListSoputkaProd(guid));
   }; /// для отображения всех проданных товаров
 
@@ -150,9 +150,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 
-  blockInput: {
-    width: "48%",
-  },
+  blockInput: { width: "48%" },
 
   input: {
     paddingLeft: 10,
@@ -177,6 +175,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     // backgroundColor: "rgba(97 ,100, 239,0.7)",
     backgroundColor: "rgba(12, 169, 70, 0.886)",
+    minWidth: "100%",
   },
 
   //////////////////// krestik

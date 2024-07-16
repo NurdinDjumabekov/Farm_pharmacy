@@ -1,16 +1,21 @@
-import React, { useCallback, useRef } from "react";
+//////// tags
 import { StyleSheet, Image, View, Text } from "react-native";
 import { TextInput, TouchableOpacity } from "react-native";
+
+/////// fns
 import { changeSearchProd } from "../../store/reducers/stateSlice";
-import {
-  clearListProductTT,
-  searchProdTT,
-} from "../../store/reducers/requestSlice";
+import { clearListProductTT } from "../../store/reducers/requestSlice";
+import { searchProdTT } from "../../store/reducers/requestSlice";
+
+/////// hooks
 import { useDispatch, useSelector } from "react-redux";
-import searchIcon from "../../assets/icons/searchIcon.png";
+import React, { useCallback } from "react";
 import { debounce } from "lodash";
 
-export const SearchProds = ({ disable, navigation, guid, refInput }) => {
+/////// assets
+import searchIcon from "../../assets/icons/searchIcon.png";
+
+export const SearchProds = ({ refInput }) => {
   const dispatch = useDispatch();
 
   const { searchProd } = useSelector((state) => state.stateSlice);
@@ -31,23 +36,6 @@ export const SearchProds = ({ disable, navigation, guid, refInput }) => {
       dispatch(clearListProductTT());
     }
   };
-
-  const clickSearch = () => {
-    if (disable) {
-      navigation.navigate("SearchScreen", { guid });
-    }
-  };
-
-  if (disable) {
-    return (
-      <TouchableOpacity style={styles.blockSearch} onPress={clickSearch}>
-        <Text style={styles.textSearch}>Поиск...</Text>
-        <TouchableOpacity onPress={clickSearch}>
-          <Image style={styles.iconSearch} source={searchIcon} />
-        </TouchableOpacity>
-      </TouchableOpacity>
-    );
-  }
 
   return (
     <View style={styles.blockSearch}>
@@ -97,8 +85,6 @@ const styles = StyleSheet.create({
     color: "#000",
     width: "100%",
   },
-  iconSearch: {
-    width: 22,
-    height: 22,
-  },
+
+  iconSearch: { width: 30, height: 30 },
 });

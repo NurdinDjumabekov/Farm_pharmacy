@@ -1,27 +1,25 @@
+/// hooks
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { View, Text, ScrollView, Image } from "react-native";
+
+/// tags
+import { View, Text, ScrollView } from "react-native";
 import { StyleSheet, TouchableOpacity } from "react-native";
+
+///fns
 import { clearListProductTT } from "../store/reducers/requestSlice";
 import { changeSearchProd } from "../store/reducers/stateSlice";
-import { SearchProds } from "../components/Soputka/SearchProds";
-import { ListSoldProduct } from "../components/Soputka/ListSoldProduct";
 
-///imgs
-import imgQr from "../assets/icons/qr_code.png";
+///components
+import { ListSoldProduct } from "../components/Soputka/ListSoldProduct";
 import { AddProducts } from "../components/Soputka/AddProducts";
+import SaleMenu from "../components/SaleMenu/SaleMenu";
 
 export const AddProdSoputkaSrceen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const { guid } = route.params?.forAddTovar; ////guid созданной накладной
 
   useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <SearchProds disable={true} navigation={navigation} guid={guid} />
-      ),
-    });
-
     return () => {
       dispatch(clearListProductTT());
       dispatch(changeSearchProd(""));
@@ -38,17 +36,14 @@ export const AddProdSoputkaSrceen = ({ navigation, route }) => {
     <View style={styles.parentBlock}>
       <ScrollView style={styles.childBlock}>
         <TouchableOpacity onPress={openScanerAddProd} style={styles.arrow}>
-          <Text style={styles.textBtn}>Продать товар</Text>
+          <Text style={styles.textBtn}>Сканировать товар</Text>
           <View style={styles.arrowInner}></View>
         </TouchableOpacity>
-        <Text style={styles.textTovar}>Список товаров</Text>
         <ListSoldProduct guidInvoice={guid} navigation={navigation} />
       </ScrollView>
-      <TouchableOpacity onPress={openScanerAddProd} style={styles.btnScaner}>
-        <Image source={imgQr} style={styles.imgQR} />
-      </TouchableOpacity>
       <AddProducts guid={guid} />
       {/* ///// модалка для добавления товаров */}
+      <SaleMenu guid={guid} navigation={navigation} />
     </View>
   );
 };
@@ -71,9 +66,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 10,
-    paddingTop: 15,
+    paddingTop: 12,
     paddingBottom: 15,
-    backgroundColor: "rgba(12, 169, 70, 0.886)",
+    backgroundColor: "rgba(97, 112, 188, 0.972)",
     marginBottom: 0,
   },
 
@@ -93,17 +88,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "500",
     color: "#fff",
-  },
-
-  textTovar: {
-    color: "#fff",
-    padding: 8,
-    fontSize: 18,
-    fontWeight: "500",
-    marginVertical: 1,
-    paddingBottom: 9,
-    paddingTop: 9,
-    backgroundColor: "rgba(47, 71, 190, 0.672)",
   },
 
   btnScaner: {

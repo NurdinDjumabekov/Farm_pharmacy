@@ -14,22 +14,6 @@ export const dataCategory = [
     img: "https://img.freepik.com/premium-vector/budget-planning-flat-illustration-is-scalable-and-easy-to-use_203633-7957.jpg?w=900",
     pathApi: "Soputka",
   },
-
-  {
-    codeid: 3,
-    name: "Бонусы",
-    link: "Leftovers",
-    img: "https://img.freepik.com/premium-vector/internet-mobile-payment-concept-with-character-people-holding-coin-smartphone_269730-277.jpg?w=900",
-    pathApi: "Leftovers",
-  },
-
-  // {
-  //   codeid: 4,
-  //   name: "Оплата",
-  //   link: "PayMoney",
-  //   img: "https://img.freepik.com/free-vector/euro-coins-concept-illustration_114360-15485.jpg?t=st=1710925698~exp=1710929298~hmac=4fb3746133437b6b0ca94daa3d06c8c634817a0562bb3e4ac1df5e613f3512bd&w=740",
-  //   pathApi: "PayMoney",
-  // },
 ];
 
 export const listTableLeftoverst = [" Товар", " Цена", " Кол-во", " Бонусы"];

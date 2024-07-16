@@ -1,26 +1,23 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+//////// hooks
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { SafeAreaView } from "react-native";
-import { FlatList } from "react-native";
-import { RefreshControl } from "react-native";
-import { getLocalDataUser } from "../helpers/returnDataUser";
-import { changeLocalData } from "../store/reducers/saveDataSlice";
+
+//////// tags
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, FlatList, RefreshControl } from "react-native";
 import { ViewButton } from "../customsTags/ViewButton";
-import {
-  clearListCategory,
-  clearListProductTT,
-  getHistorySoputka,
-  getListAgents,
-} from "../store/reducers/requestSlice";
+
+//////// fns
+import { clearListCategory } from "../store/reducers/requestSlice";
+import { clearListProductTT } from "../store/reducers/requestSlice";
+import { getHistorySoputka } from "../store/reducers/requestSlice";
+
+//////// helpers
 import { formatCount } from "../helpers/amounts";
-import { ModalCreateSoputka } from "../components/Soputka/ModalCreateSoputka";
 
 export const SoputkaScreen = ({ navigation }) => {
   //// Сопутка
   const dispatch = useDispatch();
-
-  const [modalState, setModalState] = useState(false);
 
   const { data } = useSelector((state) => state.saveDataSlice);
 
@@ -39,9 +36,8 @@ export const SoputkaScreen = ({ navigation }) => {
   }, []);
 
   const getData = async () => {
-    await getLocalDataUser({ changeLocalData, dispatch });
-    await dispatch(getHistorySoputka(data?.seller_guid));
-    await dispatch(getListAgents({ seller_guid: data?.seller_guid }));
+    dispatch(getHistorySoputka(data?.seller_guid));
+    // await dispatch(getListAgents({ seller_guid: data?.seller_guid }));
   };
 
   const nav = (guidInvoice) => {
@@ -50,7 +46,7 @@ export const SoputkaScreen = ({ navigation }) => {
 
   const openScaner = () => navigation.navigate("ScannerScreen");
 
-  const openListDoctors = () => setModalState(true);
+  const openListDoctors = () => navigation.navigate("ChoiceDoctorScreen");
 
   return (
     <>
@@ -93,9 +89,6 @@ export const SoputkaScreen = ({ navigation }) => {
                     )}
                   </View>
                 </View>
-                {item?.comment && (
-                  <Text style={styles.comment}>{item?.comment}</Text>
-                )}
               </TouchableOpacity>
             )}
             keyExtractor={(item) => item?.guid}
@@ -105,11 +98,6 @@ export const SoputkaScreen = ({ navigation }) => {
           />
         </View>
       </SafeAreaView>
-      <ModalCreateSoputka
-        modalState={modalState}
-        setModalState={setModalState}
-        navigation={navigation}
-      />
     </>
   );
 };
@@ -171,20 +159,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minWidth: "100%",
     gap: 10,
+    paddingHorizontal: 5,
   },
 
   soputka: {
     fontSize: 14,
     color: "#fff",
-    width: 170,
-    paddingTop: 10,
-    paddingBottom: 10,
     borderRadius: 8,
     paddingHorizontal: 10,
     fontWeight: "700",
     backgroundColor: "rgba(97 ,100, 239,0.7)",
-    marginTop: 12,
-    marginBottom: 12,
+    marginVertical: 10,
+    width: "47%",
   },
 
   everyProd: {

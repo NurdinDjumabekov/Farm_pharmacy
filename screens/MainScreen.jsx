@@ -1,5 +1,5 @@
 import { SafeAreaView, FlatList, RefreshControl } from "react-native";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { ViewContainer } from "../customsTags/ViewContainer";
 import { dataCategory } from "../helpers/Data";
@@ -7,6 +7,8 @@ import { EveryCategory } from "../components/EveryCategory";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import { getBalance } from "../store/reducers/requestSlice";
+
+///// delete
 import { getLocalDataUser } from "../helpers/returnDataUser";
 import { changeLocalData } from "../store/reducers/saveDataSlice";
 import QRCode from "react-native-qrcode-svg";
@@ -20,33 +22,15 @@ export const MainScreen = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       getData();
-      // console.log("restartBalance");
     }, [])
   );
 
-  const getData = async () => {
-    await getLocalDataUser({ changeLocalData, dispatch });
-    await dispatch(getBalance(data?.seller_guid));
-  };
-
-  // console.log(data, "data");
-
-  const goPage = () => navigation.navigate("HistoryBalance");
+  const getData = () => dispatch(getBalance(data?.seller_guid));
 
   return (
     <ViewContainer>
       <SafeAreaView>
         <View style={styles.parentBlock}>
-          {/* <TouchableOpacity style={styles.balance} onPress={goPage}>
-            <View>
-              <View style={styles.balanceInner}>
-                <Text style={styles.balanceText}>Бонусы</Text>
-                <View style={styles.arrow}></View>
-              </View>
-              <Text style={styles.balanceNum}>{balance || 0} сомони</Text>
-            </View>
-            <Text style={styles.balanceHistory}>История</Text>
-          </TouchableOpacity> */}
           <FlatList
             contentContainerStyle={styles.flatList}
             data={dataCategory}

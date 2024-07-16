@@ -3,20 +3,15 @@ import { Text, View, StyleSheet, Vibration } from "react-native";
 import { Camera } from "expo-camera";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import BarcodeMask from "react-native-barcode-mask";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addProdQrCode } from "../store/reducers/requestSlice";
 
-export const ScannerProdScreen = ({ navigation, route }) => {
+const ScannerProdScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
-
   const { guid } = route.params; /// guid накладной
 
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-  //// разрешение для камеры
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-
-  const { data } = useSelector((state) => state.saveDataSlice);
 
   useEffect(() => {
     (async () => {
@@ -26,21 +21,20 @@ export const ScannerProdScreen = ({ navigation, route }) => {
   }, []);
 
   const showResultModal = async ({ data }) => {
-    const { seller_guid } = data;
     if (data && !scanned) {
       setScanned(true);
-      dispatch(addProdQrCode({ data, navigation, seller_guid, guid }));
+      dispatch(addProdQrCode({ data, navigation, guid }));
       Vibration.vibrate(); // Простая вибрация
       // Вызов вибрации при обнаружении QR-кода
     }
   };
 
-  if (!permission) {
+  if (hasPermission === null) {
     /// Разрешения камеры все еще загружаются
     return <View />;
   }
 
-  if (!permission.granted || hasPermission === null) {
+  if (hasPermission === false) {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: "center" }}>
@@ -52,12 +46,11 @@ export const ScannerProdScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Camera
+      <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : showResultModal}
         style={StyleSheet.absoluteFillObject}
       >
         <BarcodeMask
-          type={BarCodeScanner.Constants.BarCodeType.qr}
           edgeColor={"rgba(12, 169, 70, 0.9)"}
           edgeRadius={10}
           width={280}
@@ -70,7 +63,7 @@ export const ScannerProdScreen = ({ navigation, route }) => {
           useNativeDriver={false}
           edgeBorderWidth={5}
         />
-      </Camera>
+      </BarCodeScanner>
     </View>
   );
 };
